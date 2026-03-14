@@ -1,0 +1,2530 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Urológiai Klinika – Orvosképzés XCIX/3, 2024</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+Pro:wght@400;600;700&family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<style>
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Source Serif Pro',serif;color:var(--text);background:var(--paper);min-height:100vh;display:flex;flex-direction:column;overflow:hidden;transition:background .3s,color .3s}
+::selection{background:var(--crimson);color:#fff}
+
+/* ===== DESIGN TOKENS ===== */
+:root,
+[data-theme="light"]{
+--paper:#FDFBF7;--text:#2C2C2C;--crimson:#8B1A1A;--green:#4A6741;
+--border:#D4C9B8;--tooltip-bg:#F5F0E8;
+--surface:#fff;--muted:#888;--muted2:#aaa;--muted3:#bbb;
+--shadow:rgba(0,0,0,.15);--overlay:rgba(0,0,0,.35);--overlay-heavy:rgba(0,0,0,.5);
+--heading:'Playfair Display',serif;
+--body:'Source Serif Pro',serif;--ui:'Source Sans Pro',sans-serif;
+}
+[data-theme="dark"]{
+--paper:#1a1a2e;--text:#d4d4dc;--crimson:#e06060;--green:#7cb87c;
+--border:#333350;--tooltip-bg:#252540;
+--surface:#22223a;--muted:#8888a0;--muted2:#6a6a80;--muted3:#555570;
+--shadow:rgba(0,0,0,.4);--overlay:rgba(0,0,0,.55);--overlay-heavy:rgba(0,0,0,.7);
+}
+@media(prefers-color-scheme:dark){
+:root:not([data-theme="light"]){
+--paper:#1a1a2e;--text:#d4d4dc;--crimson:#e06060;--green:#7cb87c;
+--border:#333350;--tooltip-bg:#252540;
+--surface:#22223a;--muted:#8888a0;--muted2:#6a6a80;--muted3:#555570;
+--shadow:rgba(0,0,0,.4);--overlay:rgba(0,0,0,.55);--overlay-heavy:rgba(0,0,0,.7);
+}}
+
+/* ===== HEADER ===== */
+header{background:var(--surface);border-bottom:2px solid var(--border);padding:0.5rem 1.2rem;display:flex;align-items:center;gap:0.75rem;z-index:100;flex-shrink:0;min-height:48px;transition:background .3s}
+header .title{font-family:var(--ui);font-size:1.1rem;color:var(--crimson);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header .subtitle{font-family:var(--ui);font-size:0.7rem;color:var(--muted);display:none}
+@media(min-width:768px){header .subtitle{display:inline}}
+.progress-wrap{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;min-width:60px}
+.progress-bar{height:100%;background:var(--crimson);border-radius:3px;transition:width .3s}
+.chapter-counter{font-family:var(--ui);font-size:0.85rem;font-weight:600;color:var(--text);white-space:nowrap}
+header button{background:none;border:none;cursor:pointer;font-size:1.2rem;color:var(--text);padding:4px 6px;border-radius:4px;font-family:var(--ui);flex-shrink:0}
+header button:hover{background:var(--tooltip-bg)}
+header button:disabled{opacity:.3;cursor:default}
+header button:disabled:hover{background:none}
+#prevBtn,#nextBtn{font-size:1.3rem;color:var(--crimson)}
+header button i{pointer-events:none}
+.header-center{min-width:0;overflow:hidden}
+
+/* ===== NAV / TOC SIDEBAR ===== */
+.toc-overlay{position:fixed;inset:0;background:var(--overlay);z-index:200;opacity:0;pointer-events:none;transition:opacity .25s}
+.toc-overlay.open{opacity:1;pointer-events:auto}
+nav.toc{position:fixed;top:0;left:0;bottom:0;width:min(380px,85vw);background:var(--surface);z-index:201;transform:translateX(-100%);transition:transform .3s,background .3s;overflow:hidden;box-shadow:4px 0 20px var(--shadow);padding:1.5rem 1.2rem;display:flex;flex-direction:column}
+nav.toc.open{transform:translateX(0)}
+nav.toc .toc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;flex-shrink:0}
+nav.toc .toc-tabs{display:flex;gap:2px;flex:1}
+.toc-tab{background:transparent;border:none;padding:8px 12px;color:var(--muted);cursor:pointer;font-size:1rem;transition:all .15s;border-radius:6px 6px 0 0;border-bottom:2px solid transparent;font-family:var(--ui)}
+.toc-tab:hover{color:var(--crimson);background:var(--tooltip-bg)}
+.toc-tab.active{color:var(--crimson);border-bottom-color:var(--crimson)}
+nav.toc .toc-actions{display:flex;gap:0.3rem;flex-shrink:0}
+nav.toc .toc-actions button{background:none;border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:0.85rem;padding:0.2rem 0.5rem;font-family:var(--ui);color:var(--text)}
+nav.toc .toc-actions button:hover{background:var(--tooltip-bg)}
+.toc-pane{display:none;flex:1;overflow-y:auto;min-height:0}
+.toc-pane.active{display:block}
+.toc-search-box{display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;margin-bottom:0.6rem;background:var(--tooltip-bg);flex-shrink:0}
+.toc-search-box:focus-within{border-color:var(--crimson);box-shadow:0 0 8px rgba(139,26,26,0.1)}
+.toc-search-box i{color:var(--muted);font-size:0.9rem}
+.toc-search-box input{border:none;background:transparent;color:var(--text);font-family:var(--ui);font-size:0.85rem;width:100%;outline:none}
+.author-group-title{font-family:var(--ui);font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);padding:10px 0 4px;border-bottom:1px solid var(--border);margin-top:8px}
+.author-group-title:first-child{margin-top:0}
+.author-entry{display:flex;align-items:center;gap:10px;padding:6px 4px;border-bottom:1px solid var(--border);cursor:pointer;border-radius:4px;transition:background .1s}
+.author-entry:hover{background:var(--tooltip-bg);padding-left:8px}
+.author-entry-photo{width:32px;height:42px;border-radius:4px;object-fit:cover;flex-shrink:0;background:var(--border)}
+.author-entry-photo-placeholder{width:32px;height:42px;border-radius:4px;flex-shrink:0;background:var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:0.8rem}
+.author-entry-info{flex:1;min-width:0}
+.author-entry-name{font-family:var(--ui);font-size:0.85rem;font-weight:600;color:var(--crimson)}
+.author-entry-role{font-family:var(--ui);font-size:0.72rem;color:var(--muted)}
+.author-entry-chapters{font-family:var(--ui);font-size:0.68rem;color:var(--muted2)}
+.search-results{font-family:var(--ui);font-size:0.85rem}
+.search-result-item{padding:8px 4px;border-bottom:1px solid var(--border);cursor:pointer;border-radius:4px;transition:background .1s}
+.search-result-item:hover{background:var(--tooltip-bg)}
+.search-result-item .sr-chapter{font-size:0.72rem;color:var(--crimson);font-weight:600}
+.search-result-item .sr-snippet{font-size:0.8rem;color:var(--text);line-height:1.4;margin-top:2px}
+.search-result-item .sr-snippet mark{background:rgba(139,26,26,0.15);color:var(--crimson);padding:0 2px;border-radius:2px}
+.search-empty{text-align:center;padding:2rem 1rem;color:var(--muted);font-size:0.85rem}
+.dock-btn{display:none}
+@media(min-width:1200px){.dock-btn{display:inline-block}}
+
+/* Docked TOC mode */
+body.toc-docked .toc-overlay{display:none!important}
+body.toc-docked nav.toc{position:relative;transform:none;z-index:1;box-shadow:none;border-right:2px solid var(--border);flex-shrink:0;width:320px;top:auto;left:auto;bottom:auto;height:auto}
+body.toc-docked .content-wrap{display:flex;flex:1;overflow:hidden}
+body.toc-docked main{flex:1}
+nav.toc ol{list-style:none;counter-reset:toc}
+nav.toc li{border-bottom:1px dotted var(--border);padding:0.45rem 0}
+nav.toc li a{text-decoration:none;color:var(--text);font-family:var(--ui);font-size:0.9rem;display:flex;justify-content:space-between;align-items:baseline;gap:0.5rem}
+nav.toc li a .dots{flex:1;border-bottom:1px dotted var(--border);min-width:20px;margin:0 4px}
+nav.toc li a .num{color:var(--crimson);font-weight:700;min-width:24px}
+nav.toc li a:hover{color:var(--crimson)}
+nav.toc li.active a{color:var(--crimson);font-weight:700}
+nav.toc .authors{font-size:0.75rem;color:var(--muted);margin-left:28px;font-style:italic}
+
+/* ===== CONTENT WRAP ===== */
+.content-wrap{display:flex;flex:1;overflow:hidden;min-height:0}
+
+/* ===== MAIN VIEWPORT ===== */
+main{flex:1;position:relative;overflow:hidden}
+.chapter{position:absolute;inset:0;overflow-y:auto;padding:2rem 1.2rem 3rem;transform:translateX(100%);opacity:0;pointer-events:none;transition:transform .4s cubic-bezier(.4,0,.2,1),opacity .4s}
+.chapter.active{transform:translateX(0);opacity:1;pointer-events:auto}
+.chapter.slide-out-left{transform:translateX(-100%);opacity:0}
+.chapter.slide-out-right{transform:translateX(100%);opacity:0}
+.chapter.slide-in-left{transform:translateX(-100%);opacity:0}
+.chapter.slide-in-right{transform:translateX(100%);opacity:0}
+.chapter.no-transition{transition:none}
+.chapter-layout{display:flex;gap:1.5rem;max-width:1100px;margin:0 auto;min-height:100%}
+.chapter-inner{flex:1;min-width:0;max-width:720px;overflow:hidden}
+.chapter-figures{width:220px;flex-shrink:0;padding:1rem 0;overflow-y:auto;border-left:1px solid var(--border);padding-left:1rem;display:none}
+.chapter-figures:has(.fig-gallery){display:block}
+/* If no figures, text takes full width centered */
+.chapter-layout:not(:has(.chapter-figures .fig-gallery)){max-width:720px}
+@media(max-width:900px){
+.chapter-layout{flex-direction:column}
+.chapter-figures{width:100%;border-left:none;border-top:1px solid var(--border);padding:0.8rem 0 0;display:none}
+.chapter-figures:has(.fig-gallery){display:flex;flex-wrap:wrap;gap:0.5rem}
+}
+
+/* ===== TYPOGRAPHY ===== */
+.ch-title{font-family:var(--heading);font-size:1.8rem;color:var(--crimson);margin-bottom:0.25rem;line-height:1.25}
+.ch-authors{font-family:var(--ui);font-size:0.9rem;color:var(--green);margin-bottom:0.3rem}
+.ch-affiliation{font-family:var(--ui);font-size:0.78rem;color:var(--muted);margin-bottom:1.5rem}
+.ch-section{font-family:var(--heading);font-size:1.25rem;color:var(--crimson);margin:1.5rem 0 0.6rem;border-bottom:1px solid var(--border);padding-bottom:0.2rem}
+.ch-subsection{font-family:var(--heading);font-size:1.05rem;color:var(--green);margin:1.2rem 0 0.5rem}
+.ch-subsubsection{font-family:var(--ui);font-size:0.95rem;font-weight:700;color:var(--text);margin:0.8rem 0 0.4rem}
+p{margin-bottom:0.8rem;line-height:1.7;text-align:justify}
+
+/* Drop cap */
+.drop-cap::first-letter{float:left;font-family:var(--heading);font-size:3.2rem;line-height:0.85;padding:0.05em 0.08em 0 0;color:var(--crimson);font-weight:700}
+
+/* Bullet lists */
+ul.med{list-style:none;margin:0.4rem 0 0.8rem 0.5rem}
+ul.med li{padding:0.15rem 0 0.15rem 1.2rem;position:relative;line-height:1.6}
+ul.med li::before{content:"►";position:absolute;left:0;color:var(--crimson);font-size:0.7rem;top:0.35rem}
+ul.med ul.med{margin-left:0.8rem}
+ul.med ul.med li::before{content:"►";font-size:0.55rem;top:0.4rem}
+
+/* Tables */
+.med-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:0.85rem}
+.med-table th{background:var(--crimson);color:#fff;padding:0.4rem 0.6rem;text-align:left;font-family:var(--ui);font-weight:600}
+.med-table td{padding:0.35rem 0.6rem;border-bottom:1px solid var(--border)}
+.med-table tr:nth-child(even){background:var(--tooltip-bg)}
+
+/* Figure gallery — lives in .chapter-figures sidebar */
+.fig-gallery{display:flex;flex-direction:column;gap:10px}
+figure.med-fig{margin:0;text-align:center}
+figure.med-fig img{width:100%;height:auto;border-radius:4px;border:1px solid var(--border);background:var(--surface);cursor:pointer;transition:transform .15s,box-shadow .15s;display:block}
+figure.med-fig img:hover{transform:scale(1.03);box-shadow:0 4px 12px var(--shadow)}
+figure.med-fig figcaption{font-family:var(--ui);font-size:0.65rem;color:var(--muted);margin-top:3px;line-height:1.25}
+@media(max-width:900px){figure.med-fig{flex:0 0 auto;width:140px}}
+
+/* dfn tooltips */
+dfn{font-style:normal;border-bottom:1px dashed var(--green);cursor:help;position:relative}
+
+/* ===== AUTHOR NAMES ===== */
+.author-link{color:var(--green);cursor:pointer;border-bottom:1px dotted var(--green);text-decoration:none;transition:color .15s}
+.author-link:hover{color:var(--crimson)}
+
+/* ===== AUTHOR CARD ===== */
+.author-card{position:fixed;z-index:500;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 30px var(--shadow);width:300px;padding:0;overflow:hidden;opacity:0;pointer-events:none;transition:opacity .2s;font-family:var(--ui)}
+.author-card.visible{opacity:1;pointer-events:auto}
+.author-card-top{display:flex;gap:12px;padding:14px 14px 10px;align-items:flex-start}
+.author-card-photo{width:64px;height:86px;border-radius:6px;object-fit:cover;flex-shrink:0;background:var(--border)}
+.author-card-photo-placeholder{width:64px;height:86px;border-radius:6px;flex-shrink:0;background:var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:1.6rem}
+.author-card-info{flex:1;min-width:0}
+.author-card-name{font-size:0.95rem;font-weight:700;color:var(--crimson);margin-bottom:2px}
+.author-card-role{font-size:0.78rem;color:var(--muted);line-height:1.4;margin-bottom:4px}
+.author-card-affil{font-size:0.72rem;color:var(--muted2);line-height:1.3}
+.author-card-bottom{padding:8px 14px 10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--tooltip-bg)}
+.author-card-chapters{font-size:0.72rem;color:var(--muted)}
+.author-card-chapters strong{color:var(--text)}
+.author-card-link{font-size:0.75rem;color:var(--crimson);text-decoration:none;display:flex;align-items:center;gap:4px}
+.author-card-link:hover{text-decoration:underline}
+
+/* ===== KEYS HINT ===== */
+.keys-hint{position:fixed;bottom:0;left:0;right:0;text-align:center;font-family:var(--ui);font-size:0.7rem;color:var(--muted2);z-index:90;pointer-events:none;display:none;padding:0.35rem 1rem;background:linear-gradient(transparent,var(--paper) 40%)}
+@media(min-width:768px){.keys-hint{display:block}}
+
+/* ===== OVERVIEW GRID ===== */
+.grid-overlay{position:fixed;inset:0;background:var(--overlay-heavy);z-index:300;display:none;overflow-y:auto;padding:2rem}
+.grid-overlay.open{display:block}
+.grid-container{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+.grid-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.grid-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px var(--shadow)}
+.grid-card .gc-num{font-family:var(--ui);font-size:0.75rem;color:var(--crimson);font-weight:700}
+.grid-card .gc-title{font-family:var(--heading);font-size:0.9rem;color:var(--text);margin:0.3rem 0;line-height:1.3}
+.grid-card .gc-authors{font-family:var(--ui);font-size:0.72rem;color:var(--muted)}
+.grid-card.active{border-color:var(--crimson);box-shadow:0 0 0 2px var(--crimson)}
+.grid-close{position:fixed;top:1rem;right:1.5rem;z-index:301;background:var(--crimson);color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:1.2rem;cursor:pointer;font-family:var(--ui)}
+
+/* ===== TOOLTIP ===== */
+.tooltip{position:fixed;background:var(--tooltip-bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:0.6rem 0.8rem;max-width:320px;font-family:var(--ui);font-size:0.82rem;line-height:1.5;box-shadow:0 4px 14px var(--shadow);z-index:400;pointer-events:none;opacity:0;transition:opacity .2s}
+.tooltip.visible{opacity:1}
+.tooltip strong{color:var(--crimson)}
+
+/* ===== PRINT ===== */
+@media print{
+header,.keys-hint,.grid-overlay,.toc-overlay,nav.toc,.tooltip{display:none!important}
+main{overflow:visible!important}
+.chapter{position:static!important;display:block!important;opacity:1!important;transform:none!important;pointer-events:auto!important;page-break-after:always}
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:767px){
+.ch-title{font-size:1.4rem}
+.chapter{padding:1.2rem 1rem 2rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+  <button id="tocBtn" title="Tartalomjegyzék (T)"><i class="ph ph-list"></i></button>
+  <button id="prevBtn" title="Előző fejezet (←)" disabled><i class="ph ph-caret-left"></i></button>
+  <div class="header-center">
+    <div class="title">Urológiai Klinika</div>
+    <div class="subtitle">Semmelweis Egyetem, Általános Orvostudományi Kar · Orvosképzés XCIX/3 · 2024</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+  <span class="chapter-counter" id="chapterCounter">0/25</span>
+  <button id="nextBtn" title="Következő fejezet (→)"><i class="ph ph-caret-right"></i></button>
+  <button id="gridBtn" title="Áttekintés (G)"><i class="ph ph-grid-four"></i></button>
+  <button id="themeBtn" title="Sötét téma (D)"><i class="ph ph-moon"></i></button>
+</header>
+
+<!-- ===== TOC SIDEBAR ===== -->
+<div class="toc-overlay" id="tocOverlay"></div>
+<div class="content-wrap" id="contentWrap">
+<nav class="toc" id="tocNav">
+  <div class="toc-header">
+    <div class="toc-tabs">
+      <button class="toc-tab active" data-tab="pages" title="Fejezetek"><i class="ph ph-book-open-text"></i></button>
+      <button class="toc-tab" data-tab="authors" title="Szerzők"><i class="ph ph-users"></i></button>
+      <button class="toc-tab" data-tab="search" title="Keresés"><i class="ph ph-magnifying-glass"></i></button>
+    </div>
+    <div class="toc-actions">
+      <button class="dock-btn" id="dockBtn" title="Rögzítés"><i class="ph ph-push-pin"></i></button>
+      <button id="tocCloseBtn" title="Bezárás"><i class="ph ph-x"></i></button>
+    </div>
+  </div>
+  <div class="toc-search-box" id="tocSearchBox" style="display:none">
+    <i class="ph ph-magnifying-glass"></i>
+    <input type="text" id="tocSearchInput" placeholder="Keresés a szövegben..." autocomplete="off">
+  </div>
+  <div class="toc-pane active" id="panePages"><ol id="tocList"></ol></div>
+  <div class="toc-pane" id="paneAuthors"><div id="authorList"></div></div>
+  <div class="toc-pane" id="paneSearch"><div id="searchResults" class="search-results"></div></div>
+</nav>
+
+<!-- ===== MAIN ===== -->
+<main id="main">
+
+<!-- Ch 0: Előszó -->
+<article class="chapter" id="ch0" data-chapter="0">
+<div class="chapter-layout"><div class="chapter-inner">
+<h1 class="ch-title">Előszó</h1>
+<p class="ch-authors">Nyirády Péter</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK, dékán, intézetvezető</p>
+<p class="drop-cap">Kedves Hallgatók, Tisztelt Kollégáink! A Semmelweis Egyetem Orvosképzés folyóiratának legfőbb célja a graduális és posztgraduális oktatás. Ez a folyóirat egy egyedülálló platform, mely lehetőséget ad a már végzett szakorvosok továbbképzésére és a leendő kollégáink urológiai edukációjára.</p>
+<p>Az urológia területén dolgozó kollégákat az elmúlt 1-2 évtized elkényeztette, mert szeretett szakmánk csaknem minden területén megújult, jelentős fejlődésen ment keresztül a tudomány korszerűsödésével párhuzamosan. Mind a kivizsgálás, mind a konzervatív, mind a sebészi kezelés rengeteget fejlődött, éppen ezért komoly felelősségünk a legújabb ismeretanyag átadása. Törekedtünk arra, hogy ez a rövid forma is egyértelmű utat mutasson a legkülönbözőbb urológiai megbetegedések kivizsgálásának és kezelésének útvesztőjében, de természetesen teszi ezt a teljesség igénye nélkül.</p>
+<p>A jelenlegi szám az urológiával foglalkozik, de egy teljesen új, megváltozott formában. Ez szakorvos kollégáinknak lehet új, akik a többszáz oldalas tankönyvekhez szoktak. Hallgatóink számára ez a megközelítés már ismert. A legfőbb célunk az urológia legfontosabb ismereteinek összefoglalása minél tömörebb formában. Az összefoglaló szerkezete a szigorlati tételekre épül.</p>
+<p>Ennek az új struktúrának a hátterében az Egyetemünkön 5 éve indult curriculum reform 1.0 képzési modellben összegyűlt tapasztalatok alapján, az idei tanévben elindított curriculum reform 2.0 áll. A legfontosabb célja az értéken alapuló, még gyakorlatiasabb, hallgatóbarát és korszerű oktatás. Orvostanhallgatóink igényét felmérve, megértve a Z generáció elvárásait, egy komplex tananyag kidolgozásába kezdtünk, mely válasz az orvostudomány robbanásszerű fejlődése során megsokszorozódó ismeretanyagra.</p>
+<p>Ennek a lapszámnak a megírása komoly kihívást jelentett a Semmelweis Egyetem Urológiai Klinika orvosainak, a fejezetek szerzőinek. A tömörített forma nekünk is új, de bízom benne, hogy sikerült az urológia csaknem minden területéről egy-egy tartalmas fejezetet összeállítani.</p>
+<p>Szeretném, hogy mindenki számára megelégedettséggel szolgáljon az új szemlélettel elkészített Orvosképzés urológiai lapszáma!</p>
+<p style="margin-top:2rem;text-align:right;font-style:italic">Budapest, 2024 szeptembere<br>Prof. Dr. Nyirády Péter<br>a tematikus szám szerkesztője</p>
+</div>
+</div>
+</article>
+
+<!-- Ch 1: Uropoeticus szervek rendellenességei -->
+<article class="chapter" id="ch1" data-chapter="1">
+<div class="chapter-layout"><div class="chapter-inner">
+
+<h1 class="ch-title">Az uropoeticus szervek rendellenességei</h1>
+<p class="ch-authors">Dér Bálint, Nyirády Péter</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+<h2 class="ch-section">A vese rendellenességei</h2>
+<p class="drop-cap">A vese fejlődési rendellenességei érinthetik a vese helyzetét/alakját, állományát, üregrendszerét (vagy mindhármat). Egyik leggyakoribb oka a végstádiumú veseelégtelenségnek.</p>
+
+<h3 class="ch-subsection">Vese agenesia</h3>
+<ul class="med">
+<li><strong>Kétoldali:</strong> ritka, fatális. Súlyos <dfn data-term="oligohydramnion">oligohydramnion</dfn> &rarr; tüdőhypoplasia &rarr; neonatális respirációs dystress &rarr; légzési elégtelenség &rarr; halál.</li>
+<li><strong>Egyoldali:</strong> ellenoldali vese kompenzatorikus hypertrophiája történik. Intrauterin UH &rarr; szűrés. Neonatális UH &rarr; diagnózis. Radioizotópos vizsgálattal <dfn data-term="dystopiás vese">dystopiás vese</dfn> kizárható. Szoliter vese legtöbbször nem társul más fejlődési rendellenességgel. Szoliter vesével született gyermek egészségesnek tekinthető, nem szükséges diéta vagy módosított étrend. Balesettől óvni kell (pl. küzdősportok, extrém sportok, lovaglás) &rarr; szolid vese rupturája &rarr; veseeltávolítás &rarr; dialíziskezelés vagy vesetranszplantáció.</li>
+</ul>
+
+<h3 class="ch-subsection">Vesedysplasia</h3>
+<ul class="med">
+<li>Veseparenchyma szegényesen osztódott, cysták gyakoriak.</li>
+<li><dfn data-term="Potter-beosztás">Potter-besorolás</dfn> a cystás dysplasiás veséknek a cysták mérete alapján:
+  <ul class="med">
+  <li>IIa „multicystás dysplasiás" vese = nagy cysták + atresiás ureter + vizeletet nem választ ki</li>
+  <li>IIb „cystás dysplasiás" vese = vese kisebb méretű + vizeletet kiválaszthat + fokális is lehet az eltérés a vesében</li>
+  </ul>
+</li>
+<li>Együtt járhat hátsó húgycsőbillentyűvel.</li>
+<li>Kétoldali súlyos fokú dysplasia &rarr; oligohydramnion &rarr; pulmonalis hypoplasia.</li>
+</ul>
+
+<h3 class="ch-subsection">Vese-hypoplasia</h3>
+<ul class="med">
+<li>Vese tömege kisebb, de sejtállománya ép.</li>
+<li>Egyoldali hypoplasiás vese gyakran társul <dfn data-term="VUR">vesicoureteralis reflux</dfn>szal, rekurrens pyelonephritissel.</li>
+<li>Radioizotópos vizsgálat ajánlott a funkció felmérése miatt.</li>
+<li>Gyakori gyulladás esetén / magas vérnyomás miatt / az összveseműködésből 10% alatti részarány mellett a vese eltávolítása javasolt.</li>
+</ul>
+
+<h3 class="ch-subsection">Kettős vese (ren et ureter duplex)</h3>
+<ul class="med">
+<li>1:20 incidencia.</li>
+<li>Distalisan közös ureter &rarr; ureter fissus.</li>
+<li>Kettőzöttség az ureter teljes hossza mentén &rarr; külön vesepólusokból indulnak és külön szájaznak a hólyagba.</li>
+<li><dfn data-term="Weigert–Mayer-szabály">Weigert–Mayer-szabály</dfn>: alsó ureter keresztezi a felsőt: a húgyhólyagban cranialisabban, míg a felső caudalisabban nyílik.</li>
+</ul>
+
+<h3 class="ch-subsection">Ectopiás vese</h3>
+<ul class="med">
+<li>Vese vándorlása a kismedencéből elmarad vagy részleges.</li>
+<li>Vese rotációja elmarad &rarr; szabálytalan vérellátás (pl. többszörös veseartériák).</li>
+<li>Gyerekeket traumáktól óvni kell (küzdősportok, motorkerékpár, lovaglás).</li>
+</ul>
+
+<h3 class="ch-subsection">Patkó vese (ren arcuatus)</h3>
+<ul class="med">
+<li>Két vese parenchymája közti aberráns összenövés a gerinc előtt.</li>
+<li>Leggyakrabban fúzió az alsó pólusoknál alakul ki.</li>
+<li>Kapcsolódás helye: <dfn data-term="isthmus">isthmus</dfn>.</li>
+</ul>
+
+<h2 class="ch-section">Húgyhólyag fejlődési rendellenességei</h2>
+<h3 class="ch-subsection">Agenesia vesicae urinae</h3>
+<ul class="med">
+<li>Ritka. Ureterek húgycsőbe vagy hüvelybe nyílnak.</li>
+<li>Vesék hydronephroticusak vagy dyspláziásak.</li>
+<li>Más neurológiai vagy ortopédiai kórképpel társul.</li>
+<li>Diagnózis: hasi UH, akár intrauterin diagnosis.</li>
+<li>Műtéti megoldás: ureterek vastagbélbe vagy bélhólyagba történő szájaztatása.</li>
+</ul>
+
+<h3 class="ch-subsection">Kettős hólyag</h3>
+<ul class="med">
+<li>Teljes: az egyik hólyag az azonos oldali uretert fogadja, és külön húgycsőbe folytatódik.</li>
+<li>Részleges: közös húgycsőbe torkollik.</li>
+<li>Társulhat hólyagnyaki húgycsőszűkülettel.</li>
+</ul>
+
+<h3 class="ch-subsection">Exstrophia vesicae urinae</h3>
+<ul class="med">
+<li>Hólyag mellső fala és fölötte lévő hasfal hiányzik. Ureterek szabadon nyílnak. Vizelet külvilágba ürül.</li>
+<li><dfn data-term="epispadiasis">Epispadiasis</dfn>sal társulhat: húgycső nyitott, dorsalis fala hiányzik.</li>
+<li>Symphyseolysissel társul. Járhat széklet inkontinenciával a medencefenék károsodása miatt.</li>
+</ul>
+
+<h3 class="ch-subsection">Diverticulum vesicae urinae</h3>
+<ul class="med">
+<li>Hólyag detrusor izomzatának rostjai között kiboltosuló nyálkahártyatasak.</li>
+<li>Veleszületetten vagy alsó húgyúti obstrukció következménye.</li>
+</ul>
+
+<h2 class="ch-section">Húgycső és hímvessző fejlődési rendellenességei</h2>
+<h3 class="ch-subsection">Húgycsőbillentyű</h3>
+<ul class="med">
+<li>Vizeletelfolyási akadályt képező rendellenességek közül a leggyakoribb (1:10 000).</li>
+<li>Hátsó húgycsőben tízszer gyakoribb az elülső húgycsőnél.</li>
+<li>Hátsó húgycsőben az ondódombtól kétoldalt distal felé húzódó két nyálkahártyaredő, melyek a külső záróizom előtt egyesülnek.</li>
+<li>Tünetek: elvékonyodó, erőtlen vizeletsugár, csepegés; vizeletretenció &rarr; tapintható, feszülő hólyag; súlyos esetben exsiccosis, azotaemia.</li>
+<li>Vizsgálat: <dfn data-term="uroflowmetria">uroflowmetria</dfn>, UH, mictiós cystoureterographia.</li>
+<li>Terápia: katéterbevezetés terápiás lehet (billentyűt átszakíthatja); optikus urethrotomia.</li>
+</ul>
+
+<h3 class="ch-subsection">Hypospadiasis</h3>
+<ul class="med">
+<li>Húgycső leggyakoribb fejlődési rendellenessége (1:200 fiúgyermekekben).</li>
+<li>Distalisan elmarad a húgycső záródása.</li>
+<li>A húgycső nem a makk csúcsán, hanem annak alsó felszínén nyílik. Minél proximálisabban nyílik, annál súlyosabb és annál gyakrabban jár hímvesszőgörbülettel.</li>
+<li>Formái: glandularis, coronalis, penoscrotalis, scrotalis, perinealis.</li>
+<li>Fityma csak dorsalisan és kétoldalt található, frenulum nincs.</li>
+<li>Péniszgörbület az esetek 50%-ában. <dfn data-term="meatusstenosis">Meatusstenosis</dfn> előfordulhat.</li>
+<li>Terápia: korrekció elvégzése javasolt iskoláskor előtt; rekonstrukciós húgycsőpótlás, péniszgörbület korrekciójával.</li>
+</ul>
+
+<h3 class="ch-subsection">Epispadiasis</h3>
+<ul class="med">
+<li>1:100 000. Elmarad a húgycső dorsalis falának záródása.</li>
+<li>Húgycsőnyílás a pénisz dorsalis felszínén. Pénisz rövidebb, felfelé görbül. Makk lapos, dorsalisan barázdált. Fityma dorsalisan hiányzik.</li>
+</ul>
+
+<h3 class="ch-subsection">Phimosis</h3>
+<ul class="med">
+<li>Fityma nyílásának szűkülete, praeputium nem vonható hátra a makk mögé.</li>
+<li>Újszülötteknél a fityma belső lemeze 2-3 éves korig a makkhoz tapad fiziológiásan (adhesio cellularis), kórosnak ezután mondható.</li>
+<li><dfn data-term="paraphimosis">Paraphimosis</dfn>t okozhat: fityma a makk mögé szorul &rarr; makk vérellátási zavara &rarr; necrosis.</li>
+<li>Felgyülemlett hámsejtek (smegma) gyulladást okozhatnak &rarr; balanitis.</li>
+<li>Terápia: 2 éves kor után fityma óvatos hátrahúzása; 3 éves kor után műtét: <dfn data-term="circumcisio">circumcisio</dfn>.</li>
+</ul>
+
+<h2 class="ch-section">Here fejlődési rendellenességei</h2>
+<h3 class="ch-subsection">Maldescensus testis (cryptorchismus)</h3>
+<ul class="med">
+<li>Mindkét here nem vagy csak időnként tapintható a herezacskóban.</li>
+<li>Leszállása a magzati élet 28. héten kezdődik.</li>
+<li>Okai: ösztrogéntúlsúly, gonadotrop hormonhiány, mechanikai (sérvtömlő).</li>
+<li>Típusok: anorchia (kétoldali herehiány), monorchia (egyoldali herehiány), retentio testis abdominalis, retentio testis inguinalis, ingahere, ectopiás here.</li>
+<li>Vizsgálat: szobahőmérsékleten meleg kézzel, hanyattfekvő gyermeken. UH, MRI, <dfn data-term="laparoszkópia">laparoszkópia</dfn> segíthet az azonosításban.</li>
+<li>Műtéti leszállítást el kell kezdeni 6 hónapos korban, érdemes befejezni 1 éves korig, legfeljebb 18 hónapos korig halasztható.</li>
+</ul>
+
+<h3 class="ch-subsection">Hydrokele congenitalis</h3>
+<ul class="med">
+<li>Processus vaginalis lemezei között elhelyezkedő folyadékgyülem közlekedik a hasüreggel &rarr; első életévben záródik.</li>
+<li>Fluktuáló, sima felszínű, nem érzékeny terime a here körül. Gyulladás, tumor kizárandó!</li>
+<li>Második életévtől fennmaradó hydrokele műtéti megoldása kívánatos.</li>
+</ul>
+
+<h3 class="ch-subsection">Varicokele</h3>
+<ul class="med">
+<li>Here és mellékhere vénás hálózatának (<dfn data-term="plexus pampiniformis">plexus pampiniformis</dfn>) tágulata.</li>
+<li>V. renalisból a bal v. testicularisba visszaáramlik &rarr; bal oldali eltérés.</li>
+<li>Ha kétoldali vagy jobb oldali &rarr; vesetumor, neuroblastoma kizárandó!</li>
+<li>Here hőmérséklete emelkedik &rarr; ronthatja a spermiogenesist.</li>
+<li>Diagnózis: Doppler-UH.</li>
+</ul>
+</div>
+</div>
+</article>
+
+<!-- Ch 2: Urológiai szervek sérülései -->
+<article class="chapter" id="ch2" data-chapter="2">
+<div class="chapter-layout">
+<div class="chapter-inner">
+
+<h1 class="ch-title">Az urológiai szervek sérülései</h1>
+<p class="ch-authors">Keszthelyi Attila, Bánfi Gergely</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+
+<h2 class="ch-section">Vesesérülések</h2>
+<p class="drop-cap">A vesesérülések leginkább politraumatizáció részjelenségeként fordulnak elő. Ritkán fordul elő, mert a vese retroperitonealis, védi saját zsíros tokja és a környező zsigeri szervek. Diagnosztikájában a CT-vizsgálat alapvető, kezelésében egyre inkább a konzervatív terápia a mérvadó.</p>
+
+<h3 class="ch-subsection">Vesesérülések fajtái</h3>
+<ul class="med">
+<li><strong>Nyílt:</strong> ritka; lumbocostalis szögletet ért lövés, szúrás; gyakran politraumatizáció részjelensége.</li>
+<li><strong>Fedett:</strong> gyakoribbak (vesetraumák 90-95%); közlekedési balesetek, küzdősportok.</li>
+</ul>
+
+<h3 class="ch-subsection">AAST klasszifikáció</h3>
+<ul class="med">
+<li>Sérülések 70%-a az I. vagy II. kategóriába tartozik.</li>
+<li><strong>I.:</strong> contusio, nem növekvő subcapsuláris vérömleny.</li>
+<li><strong>II.:</strong> corticalis laesio mélysége 1 cm-t nem éri el, extravasatio nincsen.</li>
+<li><strong>III.:</strong> corticalis laesio mélysége 1 cm felett van, extravasatio nincsen.</li>
+<li><strong>IV.:</strong> parenchyma-repedés a corticomedullaris szöveten át az üregrendszerbe ér, vagy szegmentális veseartéria-/vénasérülés.</li>
+<li><strong>V.:</strong> az egész vese szétroncsolódása.</li>
+</ul>
+
+<h3 class="ch-subsection">Diagnosztika</h3>
+<ul class="med">
+<li>Anamnézis: rendszeresen szedett gyógyszerek (véralvadásgátlók!).</li>
+<li>Vitális paraméterek ellenőrzése (systolés vérnyomás, ha &lt;90 Hgmm &rarr; sokktalanítás).</li>
+<li>Inspectio: deréktáji bőrhámhiány, contusio, haematoma.</li>
+<li>Labor: vércsoport, vérkép (hematokrit kontroll), kreatinin, vizeletvizsgálat.</li>
+<li><dfn data-term="haematuria">Haematuria</dfn>: 95%-ban jelentkezik ha az üregrendszert is érinti. A haematuria mértéke nem korrelál a sérülés súlyosságával.</li>
+<li>CT-vizsgálat: valamennyi vesesérülés esetén kötelező, kivéve a legenyhébb és legsúlyosabb esetben.</li>
+</ul>
+
+<h3 class="ch-subsection">Kezelés</h3>
+<ul class="med">
+<li>Cél: lehetőleg legtöbb veseszövet megkímélése.</li>
+<li><strong>Konzervatív:</strong> I-III. stádium, hemodinamikailag stabilis; ágynyugalom, antibiotikum, fájdalomcsillapítás.</li>
+<li><strong>Műtéti:</strong> IV-V. stádiumban; vérzés megszüntetése, parenchymarepedés zárása, vizeletszivárgás megszüntetése.</li>
+<li>Vese eltávolítása: vesekocsány leszakadása vagy nem rekonstruálható sérülés esetén.</li>
+</ul>
+
+<h2 class="ch-section">Húgyhólyagsérülések</h2>
+<ul class="med">
+<li>Nyílt – ritka. Fedett – tompa erőbehatás, telt hólyagnál.</li>
+<li><strong>Intraperitonealis:</strong> kupola vagy hátsó falon. <strong>Extraperitonealis:</strong> peritoneummal nem fedett területen.</li>
+<li>Iatrogen: leggyakrabban TUR, cystoscopia vagy nőgyógyászati műtét kapcsán.</li>
+<li>Tünetek: vérvizelés, véralvadék &rarr; <dfn data-term="hólyagtamponád">hólyagtamponád</dfn>; hasi fájdalom, defense.</li>
+<li>Terápia: intraperitonealis &rarr; azonnali feltárás; extraperitonealis &rarr; állandó katéter.</li>
+</ul>
+
+<h2 class="ch-section">Uretersérülések</h2>
+<ul class="med">
+<li>Összes iatrogen urológiai sérülés kb. 50%-a.</li>
+<li>Leggyakrabban <dfn data-term="hysterectomia">hysterectomia</dfn> kapcsán – lekötés/átöltés/coagulatio.</li>
+<li>Prevenció: pontos sebészi elvek megtartása, gondos preparálás.</li>
+<li>Terápia: ureter sínezése ureterkatéterrel; vég-a-véghez anastomosis; ureter-neoimplantáció; vagy percutan nephrostoma.</li>
+</ul>
+
+<h2 class="ch-section">Húgycsősérülés és a külső nemi szervek sérülései</h2>
+<ul class="med">
+<li>A külső nemi szervek sérülései közül a húgycső traumája a leggyakoribb.</li>
+<li>Tünetek: fájdalom, vérzés, suffusio, haematoma. <dfn data-term="urethrorrhagia">Urethrorrhagia</dfn> a húgycső sérülésére utal.</li>
+<li>Kivizsgálás: fizikális vizsgálat, UH, <dfn data-term="uretrográfia">uretrográfia</dfn>; a sérült húgycső katéterezéssel való „letapintása" nem javasolt.</li>
+</ul>
+
+<h3 class="ch-subsection">Gyógyítás</h3>
+<ul class="med">
+<li><strong>Nyílt húgycsősérülés:</strong> azonnali műtét húgycsőkatéter sínezésével.</li>
+<li><strong>Fedett húgycsősérülés:</strong> <dfn data-term="epicystostomia">epicystostomia</dfn> utáni halasztott (3 hónappal későbbi) műtét.</li>
+<li><strong><dfn data-term="péniszfractúra">Péniszfractúra</dfn>:</strong> merev hímvessző megbicsaklása folytán a barlangos testek kötőszövetes tokjának (tunica albuginea) repedése; azonnali varrat javasolt.</li>
+<li><strong>Tompa heresérülés:</strong> feltárás és elvarrás; roncsoló sérülés esetén az érintett here eltávolítása.</li>
+<li><strong><dfn data-term="heretorzió">Heretorzió</dfn>:</strong> jellemzően 35 évesnél fiatalabbakon, mihamarabbi feltárás és a here „visszaforgatása"; elkésett műtét esetén az elhalt here eltávolítása.</li>
+</ul>
+
+</div>
+<div class="chapter-figures">
+<div class="fig-gallery">
+<figure class="med-fig"><img src="img/page15_img0.jpeg" alt="Vesesérülések AAST klasszifikációja" loading="lazy"><figcaption>Vesesérülések AAST klasszifikációja</figcaption></figure>
+<figure class="med-fig"><img src="img/page15_img1.jpeg" alt="Húgycsősérülés klasszifikáció" loading="lazy"><figcaption>Húgycsősérülés klasszifikáció</figcaption></figure>
+<figure class="med-fig"><img src="img/page16_img0.jpeg" alt="Hímvesszősérülés ábra" loading="lazy"><figcaption>Hímvesszősérülés ábra</figcaption></figure>
+</div>
+</div>
+</div>
+</article>
+
+<!-- Ch 3: Húgyúti szűkületek és sipolyok -->
+<article class="chapter" id="ch3" data-chapter="3">
+<div class="chapter-layout">
+<div class="chapter-inner">
+
+<h1 class="ch-title">Húgyúti szűkületek és sipolyok</h1>
+<p class="ch-authors">Bánfi Gergely</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+
+<h2 class="ch-section">Húgycsőszűkület</h2>
+<p class="drop-cap">A húgycsőszűkület legtöbbször sérülés következtében kialakuló hegesedés következménye. Kialakulása legtöbbször iatrogén (pl. transurethralis beavatkozások vagy katéterezés után), ritkábban gáti vagy medencetrauma okozza, ritkán congenitalis.</p>
+<ul class="med">
+<li>Tünetei hasonlóak a prosztatatúltengés tüneteihez: gyenge vizeletsugár, <dfn data-term="dysuria">dysuria</dfn>, húgyúti gyulladás, <dfn data-term="pollakisuria">pollakisuria</dfn>, ritkán túlfolyásos inkontinencia.</li>
+<li>Kivizsgálás: anamnézis, uroflowmetria (Qmax &lt;15 ml/s), uretrográfia (szűkület helyének és kiterjedésének azonosítása).</li>
+<li>Gyógymód: vizelési képtelenség esetén epicystostoma; műtét:
+  <ul class="med">
+  <li><dfn data-term="urethrotomia interna">Urethrotomia interna</dfn>: csak rövid, bulbaris, gyűrűszerű szűkületnél sikeres.</li>
+  <li>Hosszabb szűkületnél: resectio + anastomosis (2 cm alatt); folt vagy lebeny (szájnyálkahártya, scrotumbőr) kibővítés.</li>
+  </ul>
+</li>
+</ul>
+
+<h2 class="ch-section">Húgyúti sipolyok</h2>
+<p>A húgyúti sipolyok a húgyutak és a szomszédos szervek közötti, hámmal bélelt járatok, melyekben a szervek egymáshoz viszonyított nyomásviszonyai határozzák meg az áramlás irányát.</p>
+<ul class="med">
+<li><dfn data-term="vesicovaginalis sipoly">Vesicovaginalis sipoly</dfn>: a nagyobb nyomású húgyhólyagból vizelet akaratlan áramlása a hüvelybe.</li>
+<li><dfn data-term="vesicoenteralis sipoly">Vesicoenteralis sipoly</dfn>: bél tartalma (bélsár és bélgázok) préselődik a hólyagba, makacs gyulladást eredményez.</li>
+<li>Kialakulás: főleg iatrogén (nőgyógyászati, sebészeti beavatkozások); sugárkezelés indirekt okozhat sipolyt.</li>
+<li>Tünete: akaratlan vizeletvesztés a hüvelyen át, vagy béltartalom ürülése a vizelettel.</li>
+<li>Gyógyítás: korai fázisban katéteres vizeletelvezetés; műtéti: sipolyjárat kiirtása, interpozitum helyezése, vizelet maximális elvezetése.</li>
+</ul>
+
+</div>
+<div class="chapter-figures">
+<div class="fig-gallery">
+<figure class="med-fig"><img src="img/page17_img0.jpeg" alt="Húgycsőszűkület ábra" loading="lazy"><figcaption>Húgycsőszűkület ábra</figcaption></figure>
+<figure class="med-fig"><img src="img/page17_img1.jpeg" alt="Sipoly típusok ábra" loading="lazy"><figcaption>Sipoly típusok ábra</figcaption></figure>
+<figure class="med-fig"><img src="img/page18_img0.jpeg" alt="Húgyúti szűkület kezelés" loading="lazy"><figcaption>Húgyúti szűkület kezelés</figcaption></figure>
+</div>
+</div>
+</div>
+</article>
+
+<!-- Ch 4: Akut has -->
+<article class="chapter" id="ch4" data-chapter="4">
+<div class="chapter-layout">
+<div class="chapter-inner">
+
+<h1 class="ch-title">Akut has (differenciáldiagnosztika)</h1>
+<p class="ch-authors">Kubik András</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+
+<h2 class="ch-section">Definíció</h2>
+<p class="drop-cap">Az akut hasi kórképeket az előzmény nélküli, 24-72 órán belül jelentkező hasi fájdalom jellemzi, amely lehet gasztroenterológiai, nőgyógyászati vagy urológiai eredetű. Mindkét nemben és bármely életkorban előfordulhatnak.</p>
+
+<h2 class="ch-section">Akut has felosztása szervek szerint</h2>
+<h3 class="ch-subsection">Nyelőcső</h3>
+<ul class="med">
+<li>Perforáció: a nyelőcső falának átszakadása, sürgős sebészeti beavatkozást igényel.</li>
+<li>Funkcionális megbetegedések: achalasia, gastrooesophagealis refluxbetegség.</li>
+</ul>
+
+<h3 class="ch-subsection">Gyomor, duodenum</h3>
+<ul class="med">
+<li>Fekély, penetráció, perforáció &rarr; azonnali sebészeti beavatkozás.</li>
+</ul>
+
+<h3 class="ch-subsection">Máj, epeutak</h3>
+<ul class="med">
+<li>Akut cholecystitis, cholangitis, epeút-obstrukció, perforáció, hepatitis.</li>
+</ul>
+
+<h3 class="ch-subsection">Pancreas</h3>
+<ul class="med">
+<li>Akut pancreatitis: epekövek, alkoholfogyasztás vagy gyógyszerek okozzák. Diagnózis: lipáz, amiláz, hasi UH/CT.</li>
+</ul>
+
+<h3 class="ch-subsection">Lép</h3>
+<ul class="med">
+<li>Léphaematoma, lépruptura, kocsánycsavarodás &rarr; sürgős sebészeti beavatkozás.</li>
+</ul>
+
+<h3 class="ch-subsection">Vékonybél</h3>
+<ul class="med">
+<li>Meckel-diverticulum, lymphadenitis mesenterialis, <dfn data-term="ileus">ileus</dfn>, Crohn-betegség, perforáció, mesenterialis érelzáródás.</li>
+</ul>
+
+<h3 class="ch-subsection">Appendicitis acuta</h3>
+<ul class="med">
+<li>Az akut has egyik leggyakoribb oka.</li>
+<li>Tünetei: éles fájdalom a jobb alsó hasban, hányinger, láz.</li>
+<li><dfn data-term="McBurney-pont">McBurney-pont</dfn>: nyomásérzékenység, izomfeszülés a jobb alsó hasfalon.</li>
+</ul>
+
+<h3 class="ch-subsection">Vastagbél</h3>
+<ul class="med">
+<li>Typhlitis, <dfn data-term="diverticulitis">diverticulitis</dfn>, vastagbélileus, IBD, perforáció, mesenterialis érelzáródás.</li>
+</ul>
+
+<h3 class="ch-subsection">Nagyerek</h3>
+<ul class="med">
+<li>Aortaaneurysma ruptura: életveszélyes állapot.</li>
+<li>Vena portae thrombosis: ascites, májelégtelenség.</li>
+</ul>
+
+<h3 class="ch-subsection">Húgyutak</h3>
+<ul class="med">
+<li><dfn data-term="nephrolithiasis">Nephrolithiasis</dfn>, ureterolithiasis: súlyos fájdalom, vizeletürítési nehézség.</li>
+<li><dfn data-term="pyelonephritis">Pyelonephritis</dfn>: súlyos fájdalom, láz, hidegrázás.</li>
+<li><dfn data-term="cystitis">Cystitis</dfn>: fájdalmas vizelés, gyakori vizelési inger.</li>
+</ul>
+
+<h3 class="ch-subsection">Férfi nemi szervek</h3>
+<ul class="med">
+<li><dfn data-term="epididymitis">Epididymitis</dfn>, orchitis, prostatitis.</li>
+<li>Teljes vizeletrekedés (total retentio) &rarr; sürgős vizeletdeviáció!</li>
+</ul>
+
+<h3 class="ch-subsection">Női nemi szervek</h3>
+<ul class="med">
+<li>Extrauterin graviditás, ovarium kocsánycsavarodás, adnexitis.</li>
+</ul>
+
+<h3 class="ch-subsection">Egyéb</h3>
+<ul class="med">
+<li>Hasfal: incarcerált sérv, haematoma, abscessus.</li>
+<li>Rekesz: subphrenicus abscessus, pleuritis diaphragmatica.</li>
+<li>Retroperitoneum: haematoma, abscessus.</li>
+</ul>
+
+<p>Az akut hasi állapotok differenciáldiagnosztikája során elsődleges fontosságú felismerni, hogy szükség van-e azonnali sebészeti beavatkozásra (perforáció, bélelhalás, vakbélgyulladás, vizeletelakadás, méhen kívüli terhesség), vagy sem. Extraabdominalis eredetű kórképek is okozhatnak súlyos hasi fájdalmat (akut szívinfarctus, pericarditis, tüdőembólia, diabetikus ketoacidosis stb.).</p>
+
+</div>
+<div class="chapter-figures">
+<div class="fig-gallery">
+<figure class="med-fig"><img src="img/page18_img1.jpeg" alt="Akut has differenciáldiagnosztika ábra" loading="lazy"><figcaption>Akut has differenciáldiagnosztika ábra</figcaption></figure>
+<figure class="med-fig"><img src="img/page19_img0.jpeg" alt="Akut has algoritmus" loading="lazy"><figcaption>Akut has algoritmus</figcaption></figure>
+</div>
+</div>
+</div>
+</article>
+
+<!-- Ch 5: Urológiai sürgősségi ellátás -->
+<article class="chapter" id="ch5" data-chapter="5">
+<div class="chapter-layout"><div class="chapter-inner">
+
+<h1 class="ch-title">Urológiai sürgősségi ellátás</h1>
+<p class="ch-authors">Kubik András</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+<h2 class="ch-section">Oliguria, anuria, akut veseelégtelenség</h2>
+<p class="drop-cap">Praerenalis, intrarenalis és postrenalis oka lehet. Az urológusok a postrenalis okokat kezelik.</p>
+<ul class="med">
+<li><dfn data-term="oliguria">Oliguria</dfn>: 24 órán belül &lt;500 ml vizelet.</li>
+<li><dfn data-term="anuria">Anuria</dfn>: 24 órán belül &lt;100 ml vizelet.</li>
+<li>Akut veseelégtelenség: a glomerularis filtráció hirtelen lecsökken &rarr; hyperuraemia, hyperkalaemia, szérumkreatinin-szint emelkedés.</li>
+<li>Postrenalis okok: ureter belsőtérfoglalása (kő, tumor, véralvadék), ureter külső kompressziója (kismedencei daganatok).</li>
+<li>Kezelés: extrém hyperkalaemia (&gt;7 mmol/l) esetén akut hemodialízis; egyébként vizelet deviálása dupla J katéterrel vagy percutan nephrostomia (PCN) képzésével.</li>
+</ul>
+
+<h2 class="ch-section">Vizeletelakadás</h2>
+<ul class="med">
+<li>Okok: <dfn data-term="BPH">BPH</dfn>, húgycsőszűkület, hólyagnyaki sclerosis, elakadó kő, prosztatadaganat.</li>
+<li>Akut esetben fájdalommal jár; krónikus vizeletelakadás fájdalmatlan, túlfolyásos inkontinencia jellemzi.</li>
+<li>Kezelés: állandó húgyhólyag-katéter vagy epicystostoma.</li>
+</ul>
+
+<h2 class="ch-section">Vérvizelés</h2>
+<ul class="med">
+<li>Okok: gyulladások, tumorok, kövek, BPH, véralvadásgátló szerek.</li>
+<li>Diagnózis: prosztata megtapintása (RDV); UH; <dfn data-term="cisztoszkópia">cisztoszkópia</dfn> elengedhetetlen.</li>
+<li>Kezelés: háromfuratú mosó katéter; szükség esetén transurethralis elektrokoaguláció (TUC).</li>
+</ul>
+
+<h2 class="ch-section">Vesekólika</h2>
+<ul class="med">
+<li>Leggyakoribb ok: ureterkő. Tünetek: kifejezett vesetáji fájdalom, amely férfiaknál a herékbe, nőknél a kisajkakba sugárzik. Hányinger, hányás, esetleg láz.</li>
+<li>Diagnózis: UH (üregrendszeri tágulat), low-dose CT (kő megjelenítése, Hounsfield-Unit denzitás).</li>
+<li>Kezelés: konzervatív (fájdalomcsillapító, görcsoldó, tamsulosin); láz vagy nem szűnő fájdalom esetén vizelet deviálás (dupla J katéter vagy PCN).</li>
+</ul>
+
+<h2 class="ch-section">Heretorzió</h2>
+<ul class="med">
+<li>Az ondózsinór megtekeredése a here vérellátási zavarához vezet.</li>
+<li>Tünetek: hirtelen herefájdalom, alhasba sugárzik, hányinger. A here felhúzódik, lüktet, érzékeny.</li>
+<li>Diagnózis: Doppler-UH (keringés hiánya).</li>
+<li>Kezelés: a here elhalása 6 órán belül bekövetkezik &rarr; azonnali műtét (herezacskó feltárása, detorkválás); ha a here színe visszatér, mindkét oldali fixálás; ha nem, semicastratio és ellenoldali fixálás.</li>
+</ul>
+
+<h2 class="ch-section">Paraphimosis</h2>
+<ul class="med">
+<li>Az előbőr a makk mögött marad, vénás pangást okoz &rarr; makk ödémája &rarr; ritkán artériás elzáródás, necrosis.</li>
+<li>Kezelés: manuális repositio; ha nem sikerül: dorsal incisio. Később circumcisio.</li>
+</ul>
+
+<h2 class="ch-section">Priapismus</h2>
+<ul class="med">
+<li>Elnyújtott merevedés (&gt;6 órán keresztül). 60% idiopathiás.</li>
+<li><strong>Low flow:</strong> vénás kiáramlás obstrukciója, hirtelen, fájdalmas.</li>
+<li><strong>High flow:</strong> arteriovenosus shunt, kevésbé fájdalmas.</li>
+<li>Kezelés: hímvessző hűtése, corpus cavernosumok punkciója; irrigáció és adrenerg anyagok; végső esetben shunt kialakítása.</li>
+</ul>
+</div>
+</div>
+</article>
+
+<!-- Ch 6: Vizeletinkontinencia -->
+<article class="chapter" id="ch6" data-chapter="6">
+<div class="chapter-layout">
+<div class="chapter-inner">
+
+<h1 class="ch-title">Vizeletinkontinencia</h1>
+<p class="ch-authors">Majoros Attila, Romics Miklós</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+
+<h2 class="ch-section">Fogalmak</h2>
+<p class="drop-cap">A <dfn data-term="vizeletinkontinencia">vizeletinkontinencia</dfn> bármely akaratlan vizeletvesztést jelent. Népbetegség mértékű probléma (többszázezer érintett hazánkban). Nőknél sokkal gyakoribb (női-férfi arány: 6:1). Életkorral előfordulása növekszik.</p>
+<ul class="med">
+<li><strong>Stressz (terheléses) inkontinencia:</strong> hasi erőkifejtés mellett fellépő vizeletvesztés.</li>
+<li><strong>Sürgősségi (urge) inkontinencia:</strong> erős vizelési inger során jelentkező vizeletvesztés.</li>
+<li><strong>Kevert vizeletinkontinencia:</strong> a két fenti együttes előfordulása.</li>
+<li><strong>Hiperaktív hólyag:</strong> sürgető vizelési inger inkontinenciával vagy anélkül.</li>
+<li><dfn data-term="nocturia">Nocturia</dfn>: gyakori éjszakai vizelés (&gt;1/éj).</li>
+<li><dfn data-term="enuresis">Enuresis</dfn>: éjszakai vizeletelfolyás, gyermekkorban 5 éves életkor után vizsgálata javasolt.</li>
+</ul>
+
+<h2 class="ch-section">Mechanizmusok és okok</h2>
+<ul class="med">
+<li><strong>Stressz inkontinencia:</strong> medencefenék izomzatának és kötőszöveti struktúrájának gyengülése. Hajlamosító: túlsúly, többszöri terhesség, nehéz szülések, tartós köhögés. Férfiaknál: radikális prosztatamutétek után.</li>
+<li><strong>Sürgősségi inkontinencia:</strong> intravesicalis okok (infekció, kő, daganat), alsó húgyúti obstrukció, neurológiai állapotok; esetek 50%-ban idiopathiás.</li>
+</ul>
+
+<h2 class="ch-section">Kivizsgálás</h2>
+<ul class="med">
+<li>Anamnézis, fizikális vizsgálat (stressz teszt, hüvelyi vizsgálat), vizeletvizsgálat, residuum UH.</li>
+<li><dfn data-term="urodinamikai vizsgálat">Urodinamikai vizsgálat</dfn>: alsó húgyutak funkcionális felmérése (cystometria + nyomás-áramlás vizsgálat).</li>
+</ul>
+
+<h2 class="ch-section">Kezelés</h2>
+<h3 class="ch-subsection">Stressz inkontinencia</h3>
+<ul class="med">
+<li>Konzervatív: életmód-tanácsadás, medencefenék izomtorna, duloxetine.</li>
+<li>Műtéti: nőknél feszülésmentes szintetikus szalagok (retropubicus/transobturator); férfiaknál suburethralis szalagok (enyhe) vagy műsphincter (súlyos).</li>
+</ul>
+
+<h3 class="ch-subsection">Sürgősségi inkontinencia</h3>
+<ul class="med">
+<li>Konzervatív: kiváltó okok megszüntetése, viselkedésterápia (hólyagtréning).</li>
+<li>Gyógyszeres: <dfn data-term="antikolinergikumok">antikolinergikumok</dfn> (oxybutinin, solifenacin), béta-3-adrenoreceptor agonisták (mirabegron).</li>
+<li>Műtéti: botulinum toxin intradetrusor injectio, sacralis neuromoduláció, húgyhólyag-augmentáció.</li>
+</ul>
+
+<h2 class="ch-section">Neurogén alsó húgyúti diszfunkció</h2>
+<ul class="med">
+<li>Neurológiai betegség következtében alakul ki, többnyire definitív.</li>
+<li>Legnagyobb veszély: magasnyomású hólyagműködés &rarr; vesicoureteralis reflux &rarr; veseelégtelenség.</li>
+<li>Urodinamikai vizsgálat kötelező minden esetben.</li>
+<li>Bázisterápia: intermittáló önkatéterezés + antikolinerg/béta-3-agonista gyógyszerek.</li>
+</ul>
+
+</div>
+<div class="chapter-figures">
+<div class="fig-gallery">
+<figure class="med-fig"><img src="img/page29_img0.jpeg" alt="1. ábra: Típusos cisztometria, nyomás-áramlás görbék" loading="lazy"><figcaption>1. ábra: Típusos cisztometria, nyomás-áramlás görbék</figcaption></figure>
+</div>
+</div>
+</div>
+</article>
+
+<!-- Ch 7: Képalkotó eljárások -->
+<article class="chapter" id="ch7" data-chapter="7">
+<div class="chapter-layout"><div class="chapter-inner">
+
+<h1 class="ch-title">Képalkotó eljárások az urológiában</h1>
+<p class="ch-authors">Horváth András, Szalontai János</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+<h2 class="ch-section">Ultrahang</h2>
+<p class="drop-cap">Nem invazív, fájdalommentes képalkotó technika, nagyfrekvenciás hanghullámokat használ. Nem okoz sugárterhelést, terhes nők és gyermekek számára is biztonságos.</p>
+<ul class="med">
+<li><strong>Vese:</strong> vesék megléte, alakja, nagysága, kövek, cysták, daganatok, üregrendszeri tágulatok.</li>
+<li><strong>Ureter:</strong> csak üregrendszeri tágulat esetén látható.</li>
+<li><strong>Húgyhólyag:</strong> telt állapotban intravesicalis tumorok, kövek, diverticulum; residuum meghatározás.</li>
+<li><strong>Prosztata:</strong> suprapubicusan méret, alak; transrectalis UH: pontosabb képminőség, biopszia irányítás.</li>
+<li><strong>Intrascrotalis:</strong> 7,5-10 MHz-es transzducer; heredaganat, mellékhere-gyulladás, hydrokele, varicokele; Doppler: heretorzió.</li>
+</ul>
+
+<h2 class="ch-section">Röntgen</h2>
+<ul class="med">
+<li><strong>Natív röntgen:</strong> kalciumtartalmú kövek, stentek, katéterek ábrázolása.</li>
+<li><strong><dfn data-term="IVP">Intravénás pielográfia (IVP)</dfn>:</strong> iv. jódtartalmú kontrasztanyag; vese működéséről, üregrendszeréről, ureterek lefutásáról ad képet. Kontraindikációk: myeloma multiplex, pajzsmirigybetegség, rossz vesefunkció, terhesség.</li>
+<li><strong>Retrograd pielográfia:</strong> cisztoszkópon keresztül kontrasztanyag az ureterbe; rossz vesefunkciónál is elvégezhető.</li>
+<li><strong>Cisztográfia:</strong> hólyagsérülés, vesicoureteralis reflux, fistulák, diverticulum igazolása.</li>
+<li><strong>Uretrográfia:</strong> húgycsőszűkület, sérülés kimutatása.</li>
+</ul>
+
+<h2 class="ch-section">CT</h2>
+<ul class="med">
+<li>Röntgensugárzás + számítógépes technológia; érzékeny, jó felbontás.</li>
+<li>Sugárterheléssel jár &rarr; nem alkalmazzuk terhes nőknél és kisgyermekekben.</li>
+<li><strong>Vese:</strong> daganatok, cysták, szűkületek, kövek, gyulladás kimutatása. Low-dose natív CT: igen magas szenzitivitás húgyúti kövekre.</li>
+<li><strong>Húgyhólyag:</strong> izominvazív hólyagtumor diagnosztika, staging.</li>
+<li><strong>Prosztata, here:</strong> nyirokcsomó- és távoli áttétek kimutatása.</li>
+</ul>
+
+<h2 class="ch-section">MR</h2>
+<ul class="med">
+<li>Erős mágneses mező és rádióhullámok; nem jár sugárterheléssel.</li>
+<li><strong>Prosztata:</strong> multiparametrikus MR (mpMR) – prosztatacarcinoma diagnosztikájában és staging-ben kulcsfontosságú; <dfn data-term="PI-RADS">PI-RADS</dfn> pontrendszer.</li>
+<li><strong>Vese:</strong> szolid és cystás laesiók karakterizálása, CT-re allergiás betegeknél alternatíva.</li>
+<li><strong>Húgyhólyag:</strong> lokális staging pontosítása.</li>
+</ul>
+
+<h2 class="ch-section">Nukleáris medicina</h2>
+<ul class="med">
+<li><dfn data-term="renográfia">Renográfia</dfn>: vesék funkcionális vizsgálata (DTPA, MAG3).</li>
+<li><strong>Izotópos csontszcintigráfia:</strong> csontáttétek kimutatása (prosztatarák, vesedaganat).</li>
+<li><strong>PET-CT:</strong> onkológiai staging és follow-up.</li>
+</ul>
+</div>
+</div>
+</article>
+
+<!-- Ch 8: Vese és ureterek gyulladásai -->
+<article class="chapter" id="ch8" data-chapter="8">
+<div class="chapter-layout"><div class="chapter-inner">
+
+<h1 class="ch-title">A vese és ureterek gyulladásai</h1>
+<p class="ch-authors">Széll Tamás</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+<h2 class="ch-section">Akut pyelonephritis</h2>
+<p class="drop-cap">A vesemedence és a veseparenchyma heveny bakteriális gyulladása. Leggyakoribb kórokozók: Gram-negatív enterális baktériumok (E. coli 80%). Nőknél gyakoribb az ascendáló fertőzés miatt.</p>
+<ul class="med">
+<li>Tünetek: magas láz, hidegrázás, vesetáji fájdalom, hányinger, hányás, dysuria.</li>
+<li>Diagnosztika: vizeletvizsgálat (pyuria, bacteriuria), vizelettenyésztés, vérkép (leukocytosis), CRP, UH (üregrendszeri tágulat kizárása).</li>
+<li>Kezelés: antibiotikum (fluorokinolon vagy cefalosporin); komplikált esetben parenteralis antibiotikum, vizelet deviáció obstrukció esetén.</li>
+<li>Szövődmények: <dfn data-term="pyonephrosis">pyonephrosis</dfn> (gennyes vese), perirenalis abscessus, urosepsis.</li>
+</ul>
+
+<h2 class="ch-section">Krónikus pyelonephritis</h2>
+<ul class="med">
+<li>Visszatérő vagy elhúzódó vesemedence-gyulladás &rarr; veseparenchyma hegesedése, zsugorvese.</li>
+<li>Hajlamosító: vesicoureteralis reflux, húgyúti obstrukció, kövesség.</li>
+</ul>
+
+<h2 class="ch-section">Vese és perirenalis tályog</h2>
+<ul class="med">
+<li>Pyelonephritis szövődményeként vagy haematogen szóródás útján.</li>
+<li>Tünetek: magas láz, vesetáji fájdalom, általános elesettség.</li>
+<li>Diagnosztika: CT (arany standard).</li>
+<li>Kezelés: antibiotikum + percutan drenázs vagy sebészi feltárás; reménytelenül károsodott vese esetén nephrectomia.</li>
+</ul>
+
+<h2 class="ch-section">Húgyúti tuberkulózis</h2>
+<ul class="med">
+<li>Mycobacterium tuberculosis haematogen szóródása a vesékbe.</li>
+<li>Tünetek: steril pyuria, dysuria, haematuria, vesetáji fájdalom.</li>
+<li>Diagnosztika: vizelet tenyésztés (Löwenstein-Jensen táptalaj), PCR, IVP/CT (jellegzetes roncsolt üregrendszer, „molyette vese").</li>
+<li>Kezelés: kombinált antituberkulotikus terápia (minimum 6 hónapos); műtét szűkületek, zsugorvese, zsugorhólyag esetén.</li>
+</ul>
+
+<h2 class="ch-section">Speciális gyulladásos kórképek</h2>
+<h3 class="ch-subsection">Xanthogranulomatosus pyelonephritis</h3>
+<ul class="med">
+<li>Ritka, krónikus, destruktív gyulladásos folyamat. Gyakran kővel társul.</li>
+<li>CT-n vesetumorral téveszthető össze.</li>
+<li>Kezelés: nephrectomia.</li>
+</ul>
+
+<h3 class="ch-subsection">Emphysematosus pyelonephritis</h3>
+<ul class="med">
+<li>Gázképző kórokozók által okozott súlyos, életveszélyes veseinfekció. Főleg diabeteses betegeknél.</li>
+<li>CT-n gáz a vesében és környezetében.</li>
+<li>Kezelés: sürgős antibiotikum + percutan drenázs vagy nephrectomia.</li>
+</ul>
+</div>
+</div>
+</article>
+
+<!-- Ch 9: Húgyhólyag és prosztata gyulladása -->
+<article class="chapter" id="ch9" data-chapter="9">
+<div class="chapter-layout"><div class="chapter-inner">
+
+<h1 class="ch-title">Húgyhólyag és prosztata gyulladása</h1>
+<p class="ch-authors">Romics Miklós</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+<h2 class="ch-section">Akut cystitis</h2>
+<p class="drop-cap">Az alsó húgyutak bakteriális gyulladása, leggyakrabban E. coli okozza. Nőknél lényegesen gyakoribb az anatómiai adottságok miatt (rövid húgycső).</p>
+<ul class="med">
+<li>Tünetek: dysuria, pollakisuria, sürgető vizelési inger, suprapubikus fájdalom, haematuria.</li>
+<li>Diagnosztika: vizeletvizsgálat, vizelettenyésztés.</li>
+<li>Kezelés: célzott antibiotikum (nitrofurantoin, fosfomycin, trimethoprim).</li>
+<li>Visszatérő cystitis (&ge;3/év): profilaxis, posztkoitális antibiotikum.</li>
+</ul>
+
+<h2 class="ch-section">Interstitialis cystitis / fájdalmas hólyag szindróma</h2>
+<ul class="med">
+<li>Krónikus fájdalom/nyomás a húgyhólyag területén, pollakisuria, negatív vizelettenyésztés.</li>
+<li>Diagnosztika: cisztoszkópia (Hunner-léziók, glomerulációk), hólyagbiopszia.</li>
+<li>Kezelés: diéta, <dfn data-term="pentosan-poliszulfát">pentosan-poliszulfát</dfn> (per os), intravesicalis kezelés (hialuronsav, DMSO), amitriptylin; végső esetben húgyhólyag augmentáció.</li>
+</ul>
+
+<h2 class="ch-section">Akut prosztatagyulladás</h2>
+<ul class="med">
+<li>Férfi populációban kb. 8-10% prevalencia. Jellemzően fiatalabb, szexuálisan aktív férfiak.</li>
+<li>Tünetek: hirtelen irritatív és obstruktív vizelési panaszok, gáti fájdalom, láz, vizeletürítési képtelenség.</li>
+<li>Fizikális vizsgálat: feszesen telt hólyag, érintésre fájdalmas prosztata.</li>
+<li>Laborban: emelkedett gyulladásos paraméterek és (figyelem!) emelkedett PSA-érték.</li>
+<li>Kezelés: ciprofloxacin + NSAID; obstruktív panaszokra alfa-receptor-blokkoló. Vizeletretenció esetén csakis suprapubicus katéter!</li>
+</ul>
+
+<h2 class="ch-section">Krónikus prosztatagyulladás</h2>
+<ul class="med">
+<li>Bakteriális: enyhébb de elhúzódó panaszok, kb. 2-5% prevalencia. Kezelés: célzott antibiotikum.</li>
+<li>Nem-bakteriális (prosztatafájdalom szindróma): populáció 2-7%-át érintheti. Fájdalomcsillapítók, fizioterápia, antidepresszánsok, periprosztatikus idegblokk.</li>
+</ul>
+
+<h2 class="ch-section">Húgycsőgyulladás</h2>
+<ul class="med">
+<li>Szexuális kontaktussal terjedő fertőzések. Gonorrhoeás (GU) és non-gonorrhoeás (NGU) típus.</li>
+<li>Terápia: GU: ceftriaxone 500 mg im.; Chlamydia: azithromycin/doxycyclin 7-14 nap.</li>
+</ul>
+
+<h2 class="ch-section">Here- és mellékheregyulladás</h2>
+<ul class="med">
+<li><dfn data-term="orchitis">Orchitis</dfn>: fájdalmas, duzzadt here; vírusfertőzés (mumps) kizárása. Kezelés: antibiotikum, jegelés.</li>
+<li>Epididymitis: rapidan progrediáló, heretáji fájdalom, duzzadás. Fiatal férfiaknál Chlamydia is. Kezelés: antibiotikum, jegelés, polcolás.</li>
+</ul>
+</div>
+</div>
+</article>
+
+<!-- Ch 10: Húgyúti kövesség -->
+<article class="chapter" id="ch10" data-chapter="10">
+<div class="chapter-layout">
+<div class="chapter-inner">
+
+<h1 class="ch-title">A húgyúti kövesség</h1>
+<p class="ch-authors">Vargha Judit, Szendrői Attila</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+
+<h2 class="ch-section">Bevezetés és epidemiológia</h2>
+<p class="drop-cap">A húgyutakban kialakult kövek egyidősek az emberiséggel. Hazánkban a lakosság hozzávetőlegesen 5%-ában alakul ki húgyúti kő. A modern életforma, az egyoldalú táplálkozás, mozgásszegény életmód és a stressz miatt folyamatos növekedést mutat. A kőbetegség az esetek felében visszatér, ezért fontos a megelőzés és életmódváltás.</p>
+
+<h2 class="ch-section">Etiológia</h2>
+<h3 class="ch-subsection">A kövek helye szerint</h3>
+<ul class="med">
+<li>Vesekelyhek, vesemedence, vesevezeték, húgyhólyag, húgycső.</li>
+</ul>
+<h3 class="ch-subsection">Kémiai összetétel szerint</h3>
+<ul class="med">
+<li>Kalcium-oxalát (monohidrát és dihidrát), kalcium-foszfát, húgysav, struvit (magnézium-ammónium-foszfát), cisztin.</li>
+</ul>
+<h3 class="ch-subsection">Etiológia szerint</h3>
+<ul class="med">
+<li>Nemfertőzéses kövek: kalcium-oxalát, kalcium-foszfát, húgysav.</li>
+<li>Infekciós kövek: struvit, kalcium-foszfát.</li>
+<li>Genetikai: cisztin.</li>
+</ul>
+
+<h2 class="ch-section">Prevenció</h2>
+<ul class="med">
+<li><strong>Javasolt:</strong> bőséges folyadékbevitel (&gt;2 liter vizelet/nap), rendszeres testmozgás, kiegyensúlyozott étrend (zöldség, gyümölcs), anyagcsere-betegség célzott kezelése.</li>
+<li><strong>Kerülendő:</strong> stresszes életmód, túlsúly, túlzott fehérjebevitel (1 g/testsúly-kg), túlzott sóbevitel (&lt;5 g/nap), extrém kalcium- és oxalátbevitel, C-vitamin nagy mennyiségű szedése.</li>
+</ul>
+
+<h2 class="ch-section">Tünetek</h2>
+<ul class="med">
+<li>Heveny veseköves görcs: erős, görcsös vesetáji fájdalom (costovertebralis szöglet), kisugárzás az alhasba, combba, férfiaknál herébe, nőknél nagyajakba.</li>
+<li>Hányinger, heves hányás kísérheti.</li>
+<li>Juxtavesicalis köveknél: gyakori, kis mennyiségű vizelés.</li>
+<li>Lázas állapot kórjelző: lezárt üregrendszerben gennyes folyamatra utalhat.</li>
+</ul>
+
+<h2 class="ch-section">Diagnosztika</h2>
+<ul class="med">
+<li>Fizikális vizsgálat: vesetáji érzékenység, ballotálásra érzékeny vese.</li>
+<li>Labor: fehérvérsejtszám-emelkedés, vesefunkció, vizeletvizsgálat (mikrohaematuria).</li>
+<li><strong>Natív CT és low dose CT:</strong> elsőként választandó képalkotó. Hounsfield-skálán kőösszetételre következtetés.</li>
+<li>UH: vesekövek, üregrendszeri tágulat. Hátránya: 5 mm alatti kövek nem pontosak.</li>
+</ul>
+
+<h2 class="ch-section">Kezelés</h2>
+<h3 class="ch-subsection">Konzervatív</h3>
+<ul class="med">
+<li><strong>Megfigyelés:</strong> nyugvó kehelykő, nem okoz panaszt; félévente UH-kontroll.</li>
+<li><strong>MET (kőhajtás):</strong> &le;5-6 mm kő spontán távozása várható: bőséges folyadék, testmozgás, alfa-receptor-blokkolók (tamsulosin), spazmolitikumok.</li>
+<li><strong>Kőoldás:</strong> csak húgysavkövek esetén: vizelet lúgosítása.</li>
+</ul>
+<h3 class="ch-subsection">Invazív kezelés</h3>
+<ul class="med">
+<li><strong><dfn data-term="ESWL">ESWL</dfn>:</strong> testen kívüli lökéshullám. Legkevésbé invazív, járóbetegként végezhető. Kontraindikáció: &gt;2 cm vesekő, &gt;1 cm ureterkő, impaktálódott kő, &gt;1000 HU denzitás, vérzészavar, terhesség.</li>
+<li><strong><dfn data-term="URS">URS</dfn> (ureteroszkópia):</strong> endoszkóppal a húgycsövön át a kőig jutunk, fogóval/lézeres fragmentálás. Alsó szakasz ureterkövek elsőként választandó módszer.</li>
+<li><strong>RIRS (flexibilis ureteroszkópia):</strong> hajlékony eszközzel a vesében lévő kövek is elérhetők.</li>
+<li><strong><dfn data-term="PCNL">PCNL</dfn>:</strong> bőrön keresztüli vesekő-eltávolítás; ESWL-re nem reagáló vagy nagy/kemény vesekövek.</li>
+<li>Laparoszkópos/robotsebészeti eltávolítás: anatómiai rendellenességgel szövődött kő esetén.</li>
+</ul>
+
+</div>
+<div class="chapter-figures">
+<div class="fig-gallery">
+<figure class="med-fig"><img src="img/page45_img0.jpeg" alt="1. ábra: Elkövesedett kettős J sín röntgenképe" loading="lazy"><figcaption>1. ábra: Elkövesedett kettős J sín röntgenképe</figcaption></figure>
+<figure class="med-fig"><img src="img/page45_img1.jpeg" alt="2. ábra: ESWL berendezés" loading="lazy"><figcaption>2. ábra: ESWL berendezés</figcaption></figure>
+<figure class="med-fig"><img src="img/page46_img0.jpeg" alt="3. ábra: Ureteroszkópos műtét röntgenfelvétele" loading="lazy"><figcaption>3. ábra: Ureteroszkópos műtét röntgenfelvétele</figcaption></figure>
+<figure class="med-fig"><img src="img/page46_img1.jpeg" alt="4a. ábra: Percutan kőműtét röntgenfelvétele" loading="lazy"><figcaption>4a. ábra: Percutan kőműtét röntgenfelvétele</figcaption></figure>
+<figure class="med-fig"><img src="img/page46_img2.jpeg" alt="4b. ábra: PCNL endoszkópos felvétel" loading="lazy"><figcaption>4b. ábra: PCNL endoszkópos felvétel</figcaption></figure>
+</div>
+</div>
+</div>
+</article>
+
+<!-- Ch 11: Külső nemi szervek betegségei -->
+<article class="chapter" id="ch11" data-chapter="11">
+<div class="chapter-layout"><div class="chapter-inner">
+
+<h1 class="ch-title">Külső nemi szervek betegségei</h1>
+<p class="ch-authors">Széll Tamás</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+<h2 class="ch-section">Balanoposthitis</h2>
+<p class="drop-cap">A makk és előbőr gyulladása. Etiológia: nemi úton terjedő kórokozók, potenciálisan patogén baktériumok és gombák. Hajlamosító tényezők: fitymaszűkület, higiénia hiánya, cukorbetegség, immundeficiencia.</p>
+<ul class="med">
+<li><strong>Akut:</strong> vizenyős, vérbő, purulens váladékozás; előbőr nem vonható hátra.</li>
+<li><strong>Balanitis erosiva circinata (Plaut-Vincent):</strong> körülhatárolt hámnecrosis a makkon.</li>
+<li><strong>Krónikus:</strong> fibrosis révén fitymaszűkülethez, akár malignus elváltozáshoz vezethet.</li>
+<li><strong>Zoon balanitis:</strong> körülhatárolt vöröses hámváltozások a makkon és előbőrön.</li>
+<li>Terápia: topicalis kezelés (bőrfertőtlenítő, szteroid, antibiotikum/antimikotikum); súlyos esetben szisztémás antibiotikum; phimosis talaján dorsal incisio vagy circumcisio.</li>
+</ul>
+
+<h2 class="ch-section"><dfn data-term="lichen sclerosus">Lichen sclerosus</dfn></h2>
+<ul class="med">
+<li>Idiopathiás, idült gyulladás; makk és előbőr hegesedése &rarr; fitymaszűkület, húgycsőszűkület.</li>
+<li>Tünetek: fehéres/elefántcsontfehér maculák, majd plakkok.</li>
+<li>Terápia: szteroid topicalis kezelés, circumcisio.</li>
+</ul>
+
+<h2 class="ch-section"><dfn data-term="Fournier-gangraena">Fournier-gangraena</dfn></h2>
+<ul class="med">
+<li>Fasciitis necrotisans: bőr alatti kötőszövet heveny gyulladása, elhalása a külső nemi szerveken.</li>
+<li>Gyorsan (néhány óra) súlyos, életveszélyes szepszist okoz.</li>
+<li>Kórokozók: aerob és anaerob baktériumok. Rizikó: cukorbetegség, immundeficiencia.</li>
+<li>Terápia: azonnali széles spektrumú antibiotikum + mielőbbi sebészi necrectomia; vizeleteltérésként suprapubicus katéter.</li>
+</ul>
+
+<h2 class="ch-section"><dfn data-term="induratio penis plastica">Induratio penis plastica</dfn> (Peyronie-kór)</h2>
+<ul class="med">
+<li>A hímvessző kóros görbülete a tunica albuginea fibrosisa miatt (mikrotraumák eredője).</li>
+<li>Tunica albugineában heg alakul ki, leggyakrabban dorsalis irányú görbületet okoz.</li>
+<li>Fizikális: tömött rezisztencia (plakk) tapintható.</li>
+<li>Konzervatív: NSAID, szteroid, Clostridium-kollagenáz, ESWT.</li>
+<li>Sebészi: corporoplastica (Nesbit, Heineke-Mikulicz), plakk kimetszése és graft, vagy péniszprotézis.</li>
+</ul>
+</div>
+</div>
+</article>
+
+<!-- Ch 12: BPH -->
+<article class="chapter" id="ch12" data-chapter="12">
+<div class="chapter-layout">
+<div class="chapter-inner">
+
+<h1 class="ch-title">Jóindulatú prosztatamegnagyobbodás – BPH</h1>
+<p class="ch-authors">Bécsi Áron</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+
+<h2 class="ch-section">Definíció és kialakulás</h2>
+<p class="drop-cap"><dfn data-term="BPH">BPH</dfn> (benignus prostata hyperplasia) – a prosztata jóindulatú megnagyobbodása. LUTS (lower urinary tract symptoms) – alsó húgyúti tünetegyüttes. A kor előrehaladtával a prosztatamegnagyobbodás aránya nő: 4. dekád kb. 8%, 6. dekád 50%, 9. dekád 80%.</p>
+
+<h2 class="ch-section">Diagnosztika</h2>
+<ul class="med">
+<li><strong>Tünetek – obstruktív:</strong> dysuria, nehéz vizeletindítás, gyengült vizeletsugár, szakaszos vizeletürítés, haspréssel vizelés, utócsepegés, teljes vizeletrekedés.</li>
+<li><strong>Tünetek – irritatív:</strong> gyakori vizelési ingerek, nocturia, urgencia.</li>
+<li><dfn data-term="IPSS">IPSS</dfn> kérdőív: tünetek szubjektív felmérése.</li>
+<li><strong>RDV (rektális digitális vizsgálat):</strong> prosztata mérete, felszíne, állománya, érzékenysége.</li>
+<li><strong>Labor:</strong> vizeletvizsgálat (leukocyturia, haematuria), <dfn data-term="PSA">PSA</dfn> (prosztatarák differenciáldiagnosztika), vesefunkció.</li>
+<li><strong>UH:</strong> prosztataméret, hólyagfal állapota, reziduum, felsőhúgyutak.</li>
+<li><strong>Uroflowmetria:</strong> Qmax (normál &gt;20-25 ml/s); BPH-ra jellemző: csökkent Qmax, lapos/csipkézett görbe.</li>
+</ul>
+
+<h2 class="ch-section">Kezelés</h2>
+<h3 class="ch-subsection">Konzervatív</h3>
+<ul class="med">
+<li>Viselkedésterápia, fitoterápiás szerek (fűrészpálma, tökmag, csalán).</li>
+<li><strong>Alfa-1-receptor-blokkolók:</strong> prosztata/hólyagnyak simaizom ellazítás (tamsulosin, alfuzosin). Hatás: néhány nap.</li>
+<li><strong>PDE5-gátlók:</strong> simaizom-relaxáció + ED-re is jó hatás (tadalafil).</li>
+<li><strong>M3-receptor-blokkolók:</strong> detrusor relaxáció (oxybutinin, solifenacin). Mellékhatás: szájszárazság, székrekedés.</li>
+<li><strong>Béta-3-agonista:</strong> mirabegron; kedvezőbb mellékhatásprofil.</li>
+<li><strong>5-alfa-reduktáz-gátlók:</strong> tesztoszteron &rarr; dihidrotesztoszteron átalakulás gátlása; prosztata sorvadása; hatás 4-6 hónap (finaszterid, dutaszterid).</li>
+</ul>
+<h3 class="ch-subsection">Műtéti</h3>
+<ul class="med">
+<li>Abszolút indikációk: nem szűnő vizeletrekedés, visszatérő fertőzések, felsőhúgyúti tágulat, hólyagkő, nem szűnő vérzés.</li>
+<li><strong><dfn data-term="TURP">TURP</dfn>:</strong> arany standard; mono- vagy bipoláris. <dfn data-term="TUR-szindróma">TUR-szindróma</dfn>: ionszegény mosófolyadék felszívódása &rarr; hipoozmoláris hypervolaemia.</li>
+<li>Lézer vaporizáció, lézer enukleáció, bipoláris enukleáció.</li>
+<li>Prosztata artéria embolizáció.</li>
+<li>Adenomectomia: nyílt műtét; laparoszkópos vagy robotasszisztált is lehetséges.</li>
+</ul>
+
+</div>
+<div class="chapter-figures">
+<div class="fig-gallery">
+<figure class="med-fig"><img src="img/page50_img0.jpeg" alt="1. ábra: Uroflowmetria – BPH-ra jellemző görbe" loading="lazy"><figcaption>1. ábra: Uroflowmetria – BPH-ra jellemző görbe</figcaption></figure>
+</div>
+</div>
+</div>
+</article>
+
+<!-- Ch 13: Férfi nemzőképesség zavarai -->
+<article class="chapter" id="ch13" data-chapter="13">
+<div class="chapter-layout">
+<div class="chapter-inner">
+
+<h1 class="ch-title">Férfi nemzőképesség zavarai</h1>
+<p class="ch-authors">Szabó Anett, Kopa Zsolt</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+
+<h2 class="ch-section">Definíció és etiológia</h2>
+<p class="drop-cap">A WHO alapján meddőnek nevezzünk egy párt, amennyiben védekezés nélküli rendszeres szexuális együttlétek ellenére nem tud terhességet elérni. Fejlett országokban párok 15%-a, Magyarországon 20%-a érintett. Meddőség oka: 50% férfi, 50% női, 30% ismeretlen.</p>
+<ul class="med">
+<li>Környezeti tényezők: légszennyezés, toxinok, endokrin disruptorok.</li>
+<li>Egészségügyi: heretorzió, műtétek, <dfn data-term="varicocele">varicokele</dfn>, endokrin zavarok, malignus betegségek.</li>
+<li>Genetikai: kariotípus anomáliák, Y-kromoszóma deléciók.</li>
+<li>Életmódi: dohányzás, alkohol, drogok, exogén tesztoszteron/szteroidok.</li>
+</ul>
+
+<h2 class="ch-section">Diagnosztika</h2>
+<ul class="med">
+<li>Anamnézis: családi, fejlődési rendellenességek, infekciók, gyógyszerek, életmód.</li>
+<li>Fizikális: másodlagos nemi jellegek, herék mérete, mellékherék, ondózsinór, varicokele.</li>
+<li>Spermaanalízis (WHO): koncentráció &ge;15 M/ml, szám &ge;39 M, progresszív mozgás &ge;32%, morfológia &ge;4%.</li>
+<li>Diagnózisok: <dfn data-term="oligozoospermia">oligozoospermia</dfn>, <dfn data-term="asthenozoospermia">asthenozoospermia</dfn>, <dfn data-term="teratozoospermia">teratozoospermia</dfn>, OAT, <dfn data-term="azoospermia">azoospermia</dfn>.</li>
+<li>Hormonvizsgálatok: tesztoszteron, LH, FSH, prolaktin, TSH.</li>
+<li>Genetikai: kariotipizálás, Y-deléciók, CFTR, spermium DNS fragmentáció.</li>
+</ul>
+
+<h2 class="ch-section">Infertilitáshoz kapcsolódó kórképek</h2>
+<h3 class="ch-subsection"><dfn data-term="testicularis dysgenesis szindróma">Testicularis dysgenesis szindróma</dfn> (TDS)</h3>
+<ul class="med">
+<li>Hereleszállási zavar, hypospadiasis, csökkent termékenység, heredaganat-kockázat.</li>
+<li>Sertoli-sejt és Leydig-sejt diszfunkció.</li>
+</ul>
+
+<h3 class="ch-subsection"><dfn data-term="hypogonadismus">Hypogonadismus</dfn></h3>
+<ul class="med">
+<li>Centrális (hipogonadotrop): alacsony gonadotropin &rarr; alacsony tesztoszteron. Ok: genetikai, drogok, anabolikus szteroidok.</li>
+<li>Perifériás (hipergonadotrop): magas gonadotropin, alacsony tesztoszteron. Ok: szisztémás betegség, genetikai defektus.</li>
+<li>Late-onset: időskori; normál FSH/LH mellett csökkent tesztoszteron.</li>
+</ul>
+
+<h3 class="ch-subsection">Varicokele és azoospermia</h3>
+<ul class="med">
+<li>Varicokele: bal &gt; jobb; fokozott hőmérséklet rontja spermiogenesist.</li>
+<li>Azoospermia: obstruktív (ép termelés, kiáramlási akadály) vagy non-obstruktív (károsodott termelés). Mikro-TESE: spermatozoidák nyerése közvetlen hereszövetből.</li>
+</ul>
+
+<h2 class="ch-section">Kezelés</h2>
+<ul class="med">
+<li>Életmódváltás, károsító tényezők eliminálása.</li>
+<li>Varicokele műtét (mikrosebészeti subinguinalis varicokelectomia).</li>
+<li>Hormonális: gonadotropin kezelés centrális hypogonadismusban.</li>
+<li>Asszisztált reprodukció: IUI, IVF, ICSI.</li>
+</ul>
+
+</div>
+<div class="chapter-figures">
+<div class="fig-gallery">
+<figure class="med-fig"><img src="img/page52_img0.jpeg" alt="Férfi meddőség kivizsgálási algoritmusa" loading="lazy"><figcaption>Férfi meddőség kivizsgálási algoritmusa</figcaption></figure>
+</div>
+</div>
+</div>
+</article>
+
+<!-- Ch 14: Férfiak szexuális zavarai -->
+<article class="chapter" id="ch14" data-chapter="14">
+<div class="chapter-layout">
+<div class="chapter-inner">
+
+<h1 class="ch-title">A férfiak szexuális zavarai</h1>
+<p class="ch-authors">Vargha Judit, Kopa Zsolt</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+
+<h2 class="ch-section"><dfn data-term="erektilis diszfunkció">Erektilis diszfunkció</dfn> (ED)</h2>
+<p class="drop-cap">A hímvessző tartós merevedési képtelensége vagy elégtelen merevedése, amely a kielégítő szexuális aktust lehetetlenné teszi. A 40 év feletti férfiak mintegy 40-50%-át érinti különböző mértékben.</p>
+<ul class="med">
+<li><strong>Etiológia:</strong> vascularis (arteriogén, veno-okklusív), neurogén, endokrin, pszichogén, gyógyszer okozta, műtét utáni.</li>
+<li><strong>Rizikófaktorok:</strong> diabetes mellitus, hypertonia, dyslipidaemia, dohányzás, elhízás, cardiovascularis betegségek.</li>
+<li><strong>Diagnosztika:</strong> anamnézis (IIEF kérdőív), fizikális vizsgálat, labor (tesztoszteron, vércukor, lipidek), Doppler-UH, intracavernosus injekciós teszt.</li>
+</ul>
+
+<h2 class="ch-section">Kezelés</h2>
+<ul class="med">
+<li><strong>1. vonal:</strong> <dfn data-term="PDE5-gátlók">PDE5-gátlók</dfn> (sildenafil, tadalafil, vardenafil, avanafil).</li>
+<li><strong>2. vonal:</strong> intracavernosus injekció (alprostadil), intraurethralis alprostadil, vákuumpumpa.</li>
+<li><strong>3. vonal:</strong> péniszprotézis implantáció (félmerev vagy felfújható).</li>
+</ul>
+
+<h2 class="ch-section">Ejakulációs zavarok</h2>
+<ul class="med">
+<li><strong>Ejaculatio praecox:</strong> a leggyakoribb szexuális zavar férfiaknál. Kezelés: viselkedésterápia, SSRI, lokális érzéstelenítő.</li>
+<li><strong>Retrográd ejakuláció:</strong> az ondó a húgyhólyagba ürül. Ok: diabétesz, prosztataműtét. Diagnózis: vizeletben spermiumok.</li>
+<li><strong>Anejakuláció:</strong> az ondóürítés teljes hiánya.</li>
+</ul>
+
+<h2 class="ch-section"><dfn data-term="Peyronie-betegség">Peyronie-betegség</dfn></h2>
+<ul class="med">
+<li>Tunica albuginea fibrosisa okozta hímvesszőgörbület (ld. 11. fejezet).</li>
+<li>Aktív fázis: fájdalom, progresszív görbület. Stabil fázis: görbület állandósul.</li>
+<li>Kezelés: konzervatív (kollagenáz, ESWT), műtéti (corporoplastica, plakk-sebészet, protézis).</li>
+</ul>
+
+<h2 class="ch-section">Priapismus</h2>
+<ul class="med">
+<li>Low-flow: vénás obstrukció, sürgős ellátást igényel (ld. 5. fejezet).</li>
+<li>High-flow: arteriovenosus shunt, kevésbé sürgős.</li>
+</ul>
+
+</div>
+<div class="chapter-figures">
+<div class="fig-gallery">
+<figure class="med-fig"><img src="img/page58_img0.jpeg" alt="1. ábra: Az erektilis diszfunkció kivizsgálásának folyamata (EAU Guidelines 2023)" loading="lazy"><figcaption>1. ábra: Az erektilis diszfunkció kivizsgálásának folyamata (EAU Guidelines 2023)</figcaption></figure>
+</div>
+</div>
+</div>
+</article>
+
+<!-- Ch 15: Gyermekurológia -->
+<article class="chapter" id="ch15" data-chapter="15">
+<div class="chapter-layout"><div class="chapter-inner">
+
+<h1 class="ch-title">Gyermekurológia</h1>
+<p class="ch-authors">Nyirády Péter, Kiss András</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+<h2 class="ch-section">Vesicoureteralis reflux (VUR)</h2>
+<p class="drop-cap">A vizelet visszaáramlása a húgyhólyagból az ureterbe és a vesemedencébe. A gyermekurológia egyik leggyakoribb kórképe. 5 fokozatú beosztás (I-V.) a reflux mértéke alapján.</p>
+<ul class="med">
+<li>Tünetek: visszatérő húgyúti fertőzések, pyelonephritis, lázas állapotok.</li>
+<li>Diagnózis: mictiós cystoureterographia (MCU).</li>
+<li>Kezelés: I-III. fok: konzervatív (antibiotikus profilaxis, spontán gyógyulás esélye); IV-V. fok: műtéti (ureter-reimplantáció vagy endoszkópos szubmukózus injekció).</li>
+</ul>
+
+<h2 class="ch-section">Pyeloureteralis átmenet szűkülete (UPJ)</h2>
+<ul class="med">
+<li>A leggyakoribb kongenitális obstrukció a felső húgyutakban.</li>
+<li><dfn data-term="hydronephrosis">Hydronephrosis</dfn>: veseüregrendszeri tágulat.</li>
+<li>Diagnózis: prenatalis és postnatalis UH, renográfia.</li>
+<li>Kezelés: pyeloplastica (Anderson-Hynes).</li>
+</ul>
+
+<h2 class="ch-section">Ureterocele</h2>
+<ul class="med">
+<li>Az ureter distalis végének cystás tágulata a hólyagban.</li>
+<li>Társulhat kettős üregrendszerrel.</li>
+<li>Kezelés: endoszkópos incisio vagy műtéti.</li>
+</ul>
+
+<h2 class="ch-section">Megaureter</h2>
+<ul class="med">
+<li>Primer obstruktív: ureterovesicalis junctio szűkülete.</li>
+<li>Primer refluxos: VUR okozta tágulat.</li>
+<li>Kezelés: enyhe fokúnál konzervatív; súlyosnál ureter-reimplantáció.</li>
+</ul>
+
+<h2 class="ch-section">Hátsó húgycsőbillentyű</h2>
+<ul class="med">
+<li>Fiúgyermekek legsúlyosabb obstruktív uropathiája.</li>
+<li>Már intrauterin felismerhető: kétoldali hydronephrosis, megahólyag.</li>
+<li>Kezelés: endoszkópos billentyű-ablatio; átmenetileg vesicostomia.</li>
+</ul>
+
+<h2 class="ch-section">Gyermekurológiai fejlődési rendellenességek</h2>
+<ul class="med">
+<li>Hypospadiasis, cryptorchismus, hydrocele, phimosis: részletesen az 1. fejezetben.</li>
+<li><strong>Enuresis nocturna:</strong> 5 éves kor felett éjszakai ágybavizelés; kezelés: viselkedésterápia, desmopressin, ébresztőóra-módszer.</li>
+</ul>
+
+<h2 class="ch-section">Wilms-tumor (nephroblastoma)</h2>
+<ul class="med">
+<li>A gyermekkori leggyakoribb rosszindulatú vesetumor. Jellemzően 2-5 éves korban.</li>
+<li>Tapintható hasi rezisztencia. Diagnózis: UH, CT.</li>
+<li>Kezelés: neoadjuváns kemoterápia + nephrectomia + adjuváns kemoterápia.</li>
+</ul>
+</div>
+</div>
+</article>
+
+<!-- Ch 16: Vese daganatai -->
+<article class="chapter" id="ch16" data-chapter="16">
+<div class="chapter-layout"><div class="chapter-inner">
+
+<h1 class="ch-title">A vese daganatai</h1>
+<p class="ch-authors">Szendrői Attila, Szalontai János</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+<h2 class="ch-section">Epidemiológia</h2>
+<p class="drop-cap"><dfn data-term="RCC">Vesedaganat (RCC)</dfn> az összes daganatos megbetegedés kb. 2-3%-a. Férfi:nő arány kb. 1,5:1. Átlagos diagnóziskori életkor: 60-70 év. Incidenciája növekszik a képalkotó vizsgálatok terjedésével.</p>
+
+<h2 class="ch-section">Rizikófaktorok</h2>
+<ul class="med">
+<li>Dohányzás, elhízás, magas vérnyomás, krónikus dialízis, örökletes szindrómák (von Hippel-Lindau).</li>
+</ul>
+
+<h2 class="ch-section">Tünetek</h2>
+<ul class="med">
+<li>Klasszikus triász (ritka): haematuria, vesetáji fájdalom, tapintható rezisztencia.</li>
+<li>Gyakran incidentálisan (képalkotó során) kerül felismerésre.</li>
+<li>Paraneoplasztikus szindróma: polycythaemia, hypercalcaemia, Stauffer-szindróma (májfunkció-zavar áttét nélkül).</li>
+</ul>
+
+<h2 class="ch-section">Diagnosztika</h2>
+<ul class="med">
+<li>UH: szolid vs. cystás laesio elkülönítése. <dfn data-term="Bosniak-klasszifikáció">Bosniak-klasszifikáció</dfn> (I-IV.).</li>
+<li>Kontrasztanyagos CT: arany standard; tumor mérete, kiterjedése, vénás invázió, nyirokcsomó- és távoli áttétek.</li>
+<li>MR: szolid/cystás elváltozás karakterizálása; vena cava thrombus megítélése.</li>
+</ul>
+
+<h2 class="ch-section">Szövettan</h2>
+<ul class="med">
+<li>Világossejtes (clear cell) RCC: leggyakoribb (~70%).</li>
+<li>Papilláris RCC, chromophob RCC, oncocytoma (benignus), angiomyolipoma (benignus).</li>
+</ul>
+
+<h2 class="ch-section">Kezelés</h2>
+<h3 class="ch-subsection">Lokalizált daganat</h3>
+<ul class="med">
+<li><strong><dfn data-term="parciális nephrectomia">Parciális nephrectomia</dfn>:</strong> vesemegtartó műtét, &le;7 cm tumor esetén arany standard. Nyílt, laparoszkópos vagy robotasszisztált.</li>
+<li><strong><dfn data-term="radikális nephrectomia">Radikális nephrectomia</dfn>:</strong> teljes vese eltávolítása. Nagy, központi tumoroknál.</li>
+<li><strong>Aktív megfigyelés:</strong> kis (&le;2 cm), idős, komorbiditásos betegeknél.</li>
+<li><strong>Ablatív technikák:</strong> krioabláció, radiofrekvenciás abláció.</li>
+</ul>
+
+<h3 class="ch-subsection">Áttétes daganat</h3>
+<ul class="med">
+<li>Cytoreduktív nephrectomia válogatott esetekben.</li>
+<li><strong>Célzott terápia:</strong> <dfn data-term="TKI">TKI</dfn> (sunitinib, pazopanib, cabozantinib), mTOR-gátlók (everolimus).</li>
+<li><strong>Immunterpia:</strong> checkpoint-gátlók (nivolumab + ipilimumab): PD1-gátló + CTLA4-gátló kombináció.</li>
+<li>Mellékhatások: bőrelváltozások, pneumonitis, májgyulladás, pajzsmirigy-eltérések, colitis.</li>
+<li>Palliatív: fájdalomcsillapítás, áttétek célzott kezelése (csontáttét sugárkezelés, agyi áttét sebészet/sugár).</li>
+</ul>
+</div>
+</div>
+</article>
+
+<!-- Ch 17: Vesemedence és ureterdaganat -->
+<article class="chapter" id="ch17" data-chapter="17">
+<div class="chapter-layout"><div class="chapter-inner">
+
+<h1 class="ch-title">Vesemedence és ureterdaganat</h1>
+<p class="ch-authors">Riesz Péter, Kovács Petra Terézia, Széles Ádám</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+<h2 class="ch-section">Epidemiológia és patológia</h2>
+<p class="drop-cap">A felsőhúgyúti <dfn data-term="urothelialis carcinoma">urothelialis carcinoma</dfn> az összes urothelialis daganat 5-10%-a. Szövettanilag a húgyhólyag-daganatokkal megegyező (urothelialis/transitiocellularis carcinoma). Rizikófaktorok: dohányzás, Balkán-endémiás nephropathia, analgetikum-abúzus.</p>
+
+<h2 class="ch-section">Tünetek és diagnosztika</h2>
+<ul class="med">
+<li>Vezető tünet: fájdalmatlan macrohaematuria.</li>
+<li>Vesetáji fájdalom: obstrukció esetén.</li>
+<li>Diagnosztika: kontrasztanyagos CT-urográfia (töltési defektus), vizeletcitológia, diagnosztikus ureterorenoszkópia (szövettani mintavétel).</li>
+</ul>
+
+<h2 class="ch-section">Kezelés</h2>
+<ul class="med">
+<li><strong>Standard:</strong> radikális nephroureterectomia (vese + teljes ureter + hólyagmandzsetta eltávolítás).</li>
+<li>Vesemegtartó: kis, alacsony grádusú daganat endoszkópos (ureterorenoszkópos) kezelése; szoliter vese esetén.</li>
+<li>Adjuváns kemoterápia: cisplatin-alapú, izominvazív tumoroknál.</li>
+<li>Előrehaladott: szisztémás kemoterápia, immunterpia (checkpoint-gátlók).</li>
+</ul>
+
+<h2 class="ch-section">Utánkövetés</h2>
+<ul class="med">
+<li>Rendszeres cisztoszkópia (hólyagrecidíva 20-50%!).</li>
+<li>CT-urográfia, vizeletcitológia.</li>
+</ul>
+</div>
+</div>
+</article>
+
+<!-- Ch 18: Húgyhólyag felületes daganata -->
+<article class="chapter" id="ch18" data-chapter="18">
+<div class="chapter-layout">
+<div class="chapter-inner">
+
+<h1 class="ch-title">A húgyhólyag nem-izominfiltrativ (felületes) daganata</h1>
+<p class="ch-authors">Riesz Péter, Széles Ádám, Kovács Petra Terézia</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+
+<h2 class="ch-section">Epidemiológia</h2>
+<p class="drop-cap">A húgyhólyagrák a 4. leggyakoribb férfi daganat. 75-80%-a nem-izominfiltrativ (NMIBC) a diagnózis időpontjában. Legnagyobb rizikófaktor: dohányzás. Foglalkozási kockázat: festékipar, gumiipar (aromás aminok).</p>
+
+<h2 class="ch-section">Tünetek és diagnosztika</h2>
+<ul class="med">
+<li>Vezető tünet: fájdalmatlan, „néma" macrohaematuria.</li>
+<li>Cisztoszkópia: papillomatosus vagy szolid intravesicalis tumor.</li>
+<li>Vizeletcitológia: magas grádusú tumorok esetén pozitív.</li>
+<li>CT-urográfia: felsőhúgyúti tumor kizárása.</li>
+</ul>
+
+<h2 class="ch-section">Stádiumok</h2>
+<ul class="med">
+<li><strong>Ta:</strong> papilláris, nem invazív.</li>
+<li><strong>Tis (CIS):</strong> carcinoma in situ, lapos, magas grádusú.</li>
+<li><strong>T1:</strong> subepithelialis kötőszövet-invázió.</li>
+</ul>
+
+<h2 class="ch-section">Kezelés</h2>
+<ul class="med">
+<li><strong><dfn data-term="TUR">TUR</dfn> (transurethralis resectio):</strong> a tumor endoszkópos eltávolítása és szövettani vizsgálata. Re-TUR 4-6 héten belül T1 és magas grádus esetén.</li>
+<li><strong>Intravesicalis terápia:</strong>
+  <ul class="med">
+  <li>Egyszeri korai kemoterápia (mitomycin C) műtét után 24 órán belül.</li>
+  <li><dfn data-term="BCG-terápia">BCG-terápia</dfn>: magas kockázatú NMIBC-nél arany standard. Indukciós (6 hét) + fenntartó (1-3 év) kezelés.</li>
+  </ul>
+</li>
+<li><strong>Kockázati besorolás:</strong>
+  <ul class="med">
+  <li>Alacsony: egyszeri, kis, alacsony grádusú Ta &rarr; TUR + egyidejű kemoterápia.</li>
+  <li>Közepes: recidiváló Ta alacsony grádus &rarr; TUR + intravesicalis kemoterápia/BCG.</li>
+  <li>Magas: T1, magas grádusú, CIS &rarr; TUR + BCG fenntartó kezelés; BCG-rezisztencia esetén <dfn data-term="radikális cystectomia">radikális cystectomia</dfn>.</li>
+  </ul>
+</li>
+</ul>
+
+</div>
+<div class="chapter-figures">
+<div class="fig-gallery">
+<figure class="med-fig"><img src="img/page73_img0.jpeg" alt="Húgyhólyagdaganat TNM stádium beosztás" loading="lazy"><figcaption>Húgyhólyagdaganat TNM stádium beosztás</figcaption></figure>
+</div>
+</div>
+</div>
+</article>
+
+<!-- Ch 19: Húgyhólyag izominfiltrativ daganata -->
+<article class="chapter" id="ch19" data-chapter="19">
+<div class="chapter-layout"><div class="chapter-inner">
+
+<h1 class="ch-title">A húgyhólyag izominfiltrativ daganata</h1>
+<p class="ch-authors">Keszthelyi Attila, Dér Bálint</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+<h2 class="ch-section">Definíció</h2>
+<p class="drop-cap">Izominfiltrativ hólyagdaganat (MIBC): a tumor beszűri a detrusor (izom) réteget (&ge;T2 stádium). A hólyagdaganatok kb. 20-25%-a tartozik ide a diagnózis időpontjában.</p>
+
+<h2 class="ch-section">Staging</h2>
+<ul class="med">
+<li><strong>T2a:</strong> felszínes izomréteg-invázió. <strong>T2b:</strong> mély izomréteg-invázió.</li>
+<li><strong>T3:</strong> perivesicalis szövet-invázió. <strong>T4:</strong> környező szervek infiltrációja (prosztata, méh, medencefal).</li>
+<li>Staging: CT mellkas-has-kismedence, csontszcintigráfia.</li>
+</ul>
+
+<h2 class="ch-section">Kezelés</h2>
+<ul class="med">
+<li><strong>Neoadjuváns cisplatin-alapú kemoterápia:</strong> műtét előtt, túlélési előny bizonyított.</li>
+<li><strong><dfn data-term="radikális cystectomia">Radikális cystectomia</dfn>:</strong> húgyhólyag eltávolítás + kismedencei lymphadenectomia. Férfiaknál: prosztata + ondóhólyagok eltávolítása. Nőknél: méh + adnexumok + hüvely mellső fala.</li>
+<li><strong>Vizeletelvezetés:</strong> ileum conduit (Bricker), <dfn data-term="neobladder">ortotop neobladder</dfn> (bélhólyag), kontinens bőr alá kiültetett reservoir.</li>
+<li><strong>Inoperabilis/nem operálható:</strong> definitív kemoradoterápia (hólyagmegtartó kezelés); szisztémás kemoterápia; immunterpia (checkpoint-gátlók).</li>
+</ul>
+</div>
+</div>
+</article>
+
+<!-- Ch 20: Prosztatarák előfordulása, tünetei, kórismézése -->
+<article class="chapter" id="ch20" data-chapter="20">
+<div class="chapter-layout"><div class="chapter-inner">
+
+<h1 class="ch-title">A prosztatarák előfordulása, tünetei, kórismézése</h1>
+<p class="ch-authors">Hüttl András, Molnár Péter József</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+<h2 class="ch-section">Epidemiológia</h2>
+<p class="drop-cap">A prosztatarák a férfiak leggyakoribb rosszindulatú daganata Európában. Jellemzően 50 éves kor felett jelentkezik. Incidenciája a PSA-szűrés elterjedésével nőtt.</p>
+
+<h2 class="ch-section">Rizikófaktorok</h2>
+<ul class="med">
+<li>Életkor, családi anamnézis (első fokú rokon prosztatarákja), afrikai származás, BRCA2 mutáció.</li>
+</ul>
+
+<h2 class="ch-section">Tünetek</h2>
+<ul class="med">
+<li>Korai stádiumban tünetmentes.</li>
+<li>Előrehaladott: alsó húgyúti tünetek (LUTS), haematuria, csontfájdalom (áttétek).</li>
+</ul>
+
+<h2 class="ch-section">Kórismézés</h2>
+<ul class="med">
+<li><strong><dfn data-term="PSA">PSA</dfn> (prosztata-specifikus antigén):</strong> normál &lt;4 ng/ml, de életkorfüggő. PSA-denzitás, PSA-sebesség, szabad/totál PSA arány finomítja a diagnosztikát.</li>
+<li><strong>RDV:</strong> kemény, egyenetlen tapintatú prosztata gyanús.</li>
+<li><strong>Multiparametrikus MR (mpMRI):</strong> PI-RADS pontrendszer (1-5). PI-RADS &ge;3: biopszia javasolt.</li>
+<li><strong>Prosztatabiopszia:</strong> szisztematikus (12 henger) + célzott (MR-fúziós) biopszia. Transrectalis vagy transperinealis úton.</li>
+<li><strong><dfn data-term="Gleason-score">Gleason-score</dfn>:</strong> szövettani differenciáltság (Grade Group 1-5). ISUP Grade Group 1 = Gleason 3+3 (kedvező), Grade Group 5 = Gleason 9-10 (legkedvezőtlenebb).</li>
+<li><strong>Staging:</strong> CT mellkas-has, csontszcintigráfia, PSMA PET-CT.</li>
+</ul>
+</div>
+</div>
+</article>
+
+<!-- Ch 21: Szervre lokalizált prosztatarák kezelése -->
+<article class="chapter" id="ch21" data-chapter="21">
+<div class="chapter-layout"><div class="chapter-inner">
+
+<h1 class="ch-title">A szervre lokalizált prosztatarák kezelése</h1>
+<p class="ch-authors">Nyirády Péter, Kocsmár Ildikó</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+<h2 class="ch-section">Aktív megfigyelés (Active Surveillance)</h2>
+<p class="drop-cap">Alacsony kockázatú prosztatarák (PSA &lt;10, Gleason 3+3, T1-T2a) esetén a kezelés halasztása rendszeres kontroll mellett (PSA, mpMRI, re-biopszia). Célja: a felesleges kezelés és mellékhatásai elkerülése.</p>
+
+<h2 class="ch-section"><dfn data-term="radikális prostatectomia">Radikális prostatectomia</dfn></h2>
+<ul class="med">
+<li>A prosztata és ondóhólyagok teljes eltávolítása a daganattal együtt.</li>
+<li>Technikák: nyílt (retropubicus), laparoszkópos, robotasszisztált (da Vinci).</li>
+<li>Idegtakarékos (nerve-sparing) technika: erectilis funkció megőrzése.</li>
+<li>Kiterjesztett kismedencei lymphadenectomia: közepes és magas kockázat esetén.</li>
+</ul>
+
+<h2 class="ch-section">Sugárkezelés</h2>
+<ul class="med">
+<li>Külső sugárkezelés (EBRT): intenzitásmodulált (IMRT), képvezérelt sugárterápia.</li>
+<li>Brachyterápia: radioaktív magok (seed) beültetése a prosztatába.</li>
+<li>Középsúlyos/magas kockázat: kombinált hormonterápiával.</li>
+</ul>
+
+<h2 class="ch-section">Műtéti szövődmények</h2>
+<ul class="med">
+<li>Vizeletinkontinencia: többnyire átmeneti, medencefenék torna segít.</li>
+<li>Erektilis diszfunkció: idegtakarékos technikával csökkenthető.</li>
+<li>Anastomosis-szűkület: ritka.</li>
+</ul>
+
+<h2 class="ch-section">Fokális terápia</h2>
+<ul class="med">
+<li>HIFU (nagy intenzitású fókuszált ultrahang), krioabláció, fotodinámiás terápia.</li>
+<li>Válogatott betegcsoportban alkalmazható, egyelőre kutatás tárgyát képezi.</li>
+</ul>
+</div>
+</div>
+</article>
+
+<!-- Ch 22: Előrehaladott prosztatarák (hormonterápia) -->
+<article class="chapter" id="ch22" data-chapter="22">
+<div class="chapter-layout"><div class="chapter-inner">
+
+<h1 class="ch-title">Előrehaladott prosztatarák kezelése (hormonterápia)</h1>
+<p class="ch-authors">Szűcs Miklós, Szalontai János</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+<h2 class="ch-section">Androgéndepriváció (ADT)</h2>
+<p class="drop-cap">A prosztatarák androgénfüggő, ezért a tesztoszteron kasztrációs szintre csökkentése a kezelés alapja. Az ADT a lokálisan előrehaladott és áttétes prosztatarák elsővonalbeli kezelése.</p>
+<ul class="med">
+<li><strong>Sebészi kasztráció:</strong> kétoldali orchidektomia (subcapsularis). Azonnali, irreverzibilis tesztoszteroncsökkenés.</li>
+<li><strong><dfn data-term="LHRH-agonista">LHRH-agonisták</dfn>:</strong> leuprorelin, goserelin, triptorelin. Első 2 hétben tesztoszteron-emelkedés (flare-up) &rarr; antiandrogénnel fedezni kell!</li>
+<li><strong><dfn data-term="LHRH-antagonista">LHRH-antagonisták</dfn>:</strong> degarelix. Gyors tesztoszteroncsökkenés, nincs flare-up.</li>
+<li><strong><dfn data-term="antiandrogén">Antiandrogének</dfn>:</strong> bicalutamid, enzalutamid, apalutamid, darolutamid. Receptorszinten gátolják a tesztoszteron hatását.</li>
+</ul>
+
+<h2 class="ch-section">ADT mellékhatásai</h2>
+<ul class="med">
+<li>Hőhullámok, libidócsökkenés, erektilis diszfunkció, osteoporosis, metabolikus szindróma, cardiovascularis kockázat, gynecomastia, anaemia, kognitív zavarok.</li>
+</ul>
+
+<h2 class="ch-section">Kasztrációrezisztens prosztatarák (CRPC)</h2>
+<ul class="med">
+<li>Definíció: kasztrációs tesztoszteronszint mellett emelkedő PSA vagy radiológiai progresszió.</li>
+<li>Kezelési lehetőségek: újgenerációs hormonterápia (abirateron + prednisolon, enzalutamid), kemoterápia, rádium-223 (csontáttétes CRPC).</li>
+</ul>
+
+<h2 class="ch-section">Kombinált kezelési stratégiák</h2>
+<ul class="med">
+<li>Metasztatikus hormonszenzitív prosztatarák (mHSPC): ADT + docetaxel, vagy ADT + abirateron, vagy ADT + enzalutamid/apalutamid.</li>
+<li>Az upfront kombinált kezelés szignifikáns túlélési előnyt biztosít.</li>
+</ul>
+</div>
+</div>
+</article>
+
+<!-- Ch 23: Előrehaladott prosztatarák (kemoterápia) -->
+<article class="chapter" id="ch23" data-chapter="23">
+<div class="chapter-layout"><div class="chapter-inner">
+
+<h1 class="ch-title">Előrehaladott prosztatarák kezelése (kemoterápia)</h1>
+<p class="ch-authors">Vargha Judit</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+<h2 class="ch-section">Kemoterápia indikációi</h2>
+<p class="drop-cap">A kemoterápia az előrehaladott, kasztrációrezisztens prosztatarák kezelésének egyik alappillére, valamint a metasztatikus hormonszenzitív prosztatarák upfront kezelési stratégiájának része.</p>
+<ul class="med">
+<li><strong><dfn data-term="docetaxel">Docetaxel</dfn>:</strong> elsővonalbeli kemoterápiás szer mCRPC-ben. 3 hetente 75 mg/m², prednisolonnal kombinálva. Bizonyított túlélési előny.</li>
+<li><strong><dfn data-term="cabazitaxel">Cabazitaxel</dfn>:</strong> másodvonalbeli kemoterápia, docetaxel-rezisztens esetekben.</li>
+</ul>
+
+<h2 class="ch-section">Mellékhatások</h2>
+<ul class="med">
+<li>Myelosuppressio (neutropenia!), perifériás neuropathia, hányinger, fáradékonyság, folyadékretenció, alopecia.</li>
+<li>G-CSF profilaxis javasolt neutropenia-kockázat esetén.</li>
+</ul>
+
+<h2 class="ch-section">Hímvessző daganatai</h2>
+<ul class="med">
+<li>Ritka (Európában 1/100 000 alatti). Rizikófaktor: phimosis, krónikus gyulladás, HPV-fertőzés.</li>
+<li>Szövettan: 95-97% laphámrák (squamocellularis carcinoma). HPV-asszociált és nem HPV-függő típusok.</li>
+<li>Tünetek: indurált, karfiolszerű, vérzékeny laesio a glanson vagy fityma bőrén.</li>
+<li>Kezelés: sebészi excisio/glansectomia/penectomia. Nyirokcsomó-staging: sentinel biopszia vagy radikális inguinalis lymphadenectomia.</li>
+<li>Kezelés nélkül 2 éven belül halálhoz vezet.</li>
+</ul>
+</div>
+</div>
+</article>
+
+<!-- Ch 24: Heredaganatok -->
+<article class="chapter" id="ch24" data-chapter="24">
+<div class="chapter-layout">
+<div class="chapter-inner">
+
+<h1 class="ch-title">Heredaganatok</h1>
+<p class="ch-authors">Szűcs Miklós, Weigert Tamás</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+
+<h2 class="ch-section">Epidemiológia</h2>
+<p class="drop-cap">A heredaganat a 15-40 év közötti férfiak egyik leggyakoribb rosszindulatú daganata. Az összes férfi daganat 1-1,5%-a (urológiai tumorok 5%-a). Európában 3-6 új beteg/100 000 férfi.</p>
+
+<h2 class="ch-section">Hajlamosító tényezők</h2>
+<ul class="med">
+<li><dfn data-term="cryptorchismus">Hereleszállási zavar</dfn>, hypospadiasis, genetikai tényezők, fejlődési rendellenességek, atrophiás here.</li>
+</ul>
+
+<h2 class="ch-section">Tünetek és diagnosztika</h2>
+<ul class="med">
+<li>Fájdalmatlan tömött rezisztencia a herében; húzó fájdalom, duzzanat.</li>
+<li>Fizikális vizsgálat, scrotalis UH, tumormarkerek (<dfn data-term="AFP">AFP</dfn>, <dfn data-term="béta-HCG">béta-HCG</dfn>, NSE, LDH).</li>
+<li>Staging: mellkas-has-kismedencei CT.</li>
+</ul>
+
+<h2 class="ch-section">Patológia</h2>
+<ul class="med">
+<li>Döntő többség: csírasejteredetű tumor (90-95%).</li>
+<li><strong><dfn data-term="seminoma">Seminoma</dfn>:</strong> klasszikus, anaplasztikus, spermatocystás.</li>
+<li><strong><dfn data-term="non-seminoma">Non-seminoma</dfn>:</strong> embryonalis carcinoma, teratoma, choriocarcinoma, yolk-sac tumor.</li>
+<li>Sex cord-stroma tumorok: Leydig-sejtes, Sertoli-sejtes.</li>
+</ul>
+
+<h2 class="ch-section">Kezelés</h2>
+<ul class="med">
+<li>Spermiumprezerváció felajánlása műtét előtt!</li>
+<li><strong>Első lépés:</strong> magas kasztráció (inguinalis metszésből az érintett here eltávolítása).</li>
+<li>Hereprotézis felajánlása.</li>
+</ul>
+
+<h3 class="ch-subsection">Seminoma</h3>
+<ul class="med">
+<li>Sugárérzékeny; de az irradiáció háttérbe szorul a másodlagos daganat kockázata miatt.</li>
+<li>Stádium I: aktív megfigyelés vagy adjuváns carboplatin.</li>
+<li>Áttétes: kemoterápia (BEP).</li>
+</ul>
+
+<h3 class="ch-subsection">Non-seminoma</h3>
+<ul class="med">
+<li>Áttétes: <dfn data-term="BEP-protokoll">BEP</dfn> (bleomycin, etoposid, cisplatin) kombinált kemoterápia.</li>
+<li>Alternatív: PVB, VIP protokollok.</li>
+<li><dfn data-term="RLA">Retroperitonealis lymphadenectomia (RLA)</dfn>: rest tumorok, kemorezisztens daganatok eltávolítása.</li>
+</ul>
+
+<h3 class="ch-subsection">Prognózis (IGCCG)</h3>
+<ul class="med">
+<li>Jó: &gt;90% 5 éves túlélés. Közepes: &gt;75%. Rossz: &lt;50%.</li>
+</ul>
+
+<h2 class="ch-section">Ellenőrzés</h2>
+<ul class="med">
+<li>1. évben 4-6 hetente, majd csökkenő gyakorisággal 10 évig. Marker + CT + ellenoldali here UH.</li>
+</ul>
+
+</div>
+<div class="chapter-figures">
+<div class="fig-gallery">
+<figure class="med-fig"><img src="img/page89_img0.jpeg" alt="Heredaganat – szövettani típusok" loading="lazy"><figcaption>Heredaganat – szövettani típusok</figcaption></figure>
+<figure class="med-fig"><img src="img/page89_img1.jpeg" alt="Heredaganat – stádiumbeosztás" loading="lazy"><figcaption>Heredaganat – stádiumbeosztás</figcaption></figure>
+<figure class="med-fig"><img src="img/page89_img2.jpeg" alt="Heredaganat – tumormarkerek" loading="lazy"><figcaption>Heredaganat – tumormarkerek</figcaption></figure>
+<figure class="med-fig"><img src="img/page89_img3.jpeg" alt="Heredaganat – kezelési séma" loading="lazy"><figcaption>Heredaganat – kezelési séma</figcaption></figure>
+<figure class="med-fig"><img src="img/page92_img0.jpeg" alt="Heredaganat – kezelési algoritmus" loading="lazy"><figcaption>Heredaganat – kezelési algoritmus</figcaption></figure>
+</div>
+</div>
+</div>
+</article>
+
+<!-- Ch 25: Vérvizelés -->
+<article class="chapter" id="ch25" data-chapter="25">
+<div class="chapter-layout">
+<div class="chapter-inner">
+
+<h1 class="ch-title">A vérvizelés (haematuria) kivizsgálása és differenciáldiagnosztikája</h1>
+<p class="ch-authors">Majoros Attila, Ács Júlia</p>
+<p class="ch-affiliation">Semmelweis Egyetem ÁOK Urológiai Klinika</p>
+
+
+<h2 class="ch-section">Fogalmak</h2>
+<p class="drop-cap">Vérvizelés esetén elsődlegesen mindig húgyúti daganat lehetőségére kell gondolnunk, ezért ennek kizárása a legfontosabb feladat!</p>
+<ul class="med">
+<li><dfn data-term="macrohaematuria">Macrohaematuria</dfn>: szemmel láthatóan véres vizelet (halvány rózsaszíntől sötétvörösig).</li>
+<li><dfn data-term="microhaematuria">Microhaematuria</dfn>: csak laboratóriumi módszerekkel kimutatható.</li>
+<li><strong>Iniciális:</strong> vizelés elején véres &rarr; húgycsővérzés.</li>
+<li><strong>Teljes:</strong> egész vizelés során &rarr; húgyhólyag vagy felsőhúgyutak.</li>
+<li><strong>Terminális:</strong> vizelés végén &rarr; hólyagnyak.</li>
+<li><strong>Néma haematuria:</strong> kísérő tünetek nélkül. Húgyhólyagdaganat típusos tünete!</li>
+</ul>
+
+<h2 class="ch-section">Felosztás okok szerint</h2>
+<h3 class="ch-subsection">Urológiai okok</h3>
+<ul class="med">
+<li>Tumorok: húgyhólyag, prosztata, ureter, pyelum, vese, húgycső.</li>
+<li>Nem tumoros: cystitis, urethritis, pyelonephritis, prostatitis, húgyúti kövek, BPH, sérülések, idegentestek, urogenitalis tbc.</li>
+</ul>
+
+<h3 class="ch-subsection">Nem urológiai okok</h3>
+<ul class="med">
+<li>Véralvadási betegségek, antikoaguláns kezelés.</li>
+<li>Nefrológiai: interstitialis nephritis, glomerulonephritis.</li>
+<li>Irradiációs cystitis, húgyhólyag-endometriosis.</li>
+</ul>
+
+<h2 class="ch-section">Vizsgálati módszerek</h2>
+<ul class="med">
+<li>Anamnézis, fizikális vizsgálat (RDV, külső genitáliák).</li>
+<li>Vizeletvizsgálat: gyorsteszt, üledék, tenyésztés, <dfn data-term="vizeletcitológia">vizeletcitológia</dfn>.</li>
+<li>UH: vese, húgyhólyag (telt állapotban).</li>
+<li>Low-dose CT: húgyúti kövek.</li>
+<li>Urethrocystoscopia: húgycső és húgyhólyag endoszkópos vizsgálata. Kimutatható: tumor, kő, diverticulum, szűkület, felsőhúgyúti vérzés lokalizálása.</li>
+<li>Kontrasztanyagos CT-urográfia: vesedaganat, felsőhúgyúti tumor kimutatása és staging.</li>
+<li>Retrográd uretrográfia, cisztográfia, ureterográfia: speciális indikációk.</li>
+</ul>
+
+<h2 class="ch-section">Algoritmus</h2>
+<ul class="med">
+<li>Macrohaematuria: mindig teljes kivizsgálás (cisztoszkópia + CT-urográfia).</li>
+<li>Microhaematuria: kockázati tényezők alapján mérlegelendő a teljes kivizsgálás.</li>
+<li>Isomorph vörösvérsejtek: nem glomerularis eredetű. Dysmorph vörösvérsejtek: glomerularis eredetű &rarr; nefrológiai konzílium.</li>
+</ul>
+
+</div>
+<div class="chapter-figures">
+<div class="fig-gallery">
+<figure class="med-fig"><img src="img/page94_img0.jpeg" alt="Haematuria kivizsgálási algoritmus" loading="lazy"><figcaption>Haematuria kivizsgálási algoritmus</figcaption></figure>
+</div>
+</div>
+</div>
+</article>
+
+</main>
+</div><!-- /content-wrap -->
+
+<!-- keyboard hints shown in bottom-right corner -->
+<div class="keys-hint" id="keysHint">← → fejezet · Shift+görgő fejezet · Ctrl+görgő zoom · T tartalom · G áttekintés · D téma · Esc bezárás</div>
+
+<!-- ===== OVERVIEW GRID ===== -->
+<div class="grid-overlay" id="gridOverlay">
+  <button class="grid-close" id="gridClose"><i class="ph ph-x"></i></button>
+  <div class="grid-container" id="gridContainer"></div>
+</div>
+
+<!-- ===== TOOLTIP ===== -->
+<div class="tooltip" id="tooltip"></div>
+<div class="author-card" id="authorCard"></div>
+
+<script>
+// ===== DATA =====
+const CHAPTERS = [
+  {id:0,title:"Előszó",authors:"Nyirády Péter"},
+  {id:1,title:"Az uropoeticus szervek rendellenességei",authors:"Dér Bálint, Nyirády Péter"},
+  {id:2,title:"Az urológiai szervek sérülései",authors:"Keszthelyi Attila, Bánfi Gergely"},
+  {id:3,title:"Húgyúti szűkületek és sipolyok",authors:"Bánfi Gergely"},
+  {id:4,title:"Akut has (differenciáldiagnosztika)",authors:"Kubik András"},
+  {id:5,title:"Urológiai sürgősségi ellátás",authors:"Kubik András"},
+  {id:6,title:"Vizeletinkontinencia",authors:"Majoros Attila, Romics Miklós"},
+  {id:7,title:"Képalkotó eljárások az urológiában",authors:"Horváth András, Szalontai János"},
+  {id:8,title:"A vese és ureterek gyulladásai",authors:"Széll Tamás"},
+  {id:9,title:"Húgyhólyag és prosztata gyulladása",authors:"Romics Miklós"},
+  {id:10,title:"A húgyúti kövesség",authors:"Vargha Judit, Szendrői Attila"},
+  {id:11,title:"Külső nemi szervek betegségei",authors:"Széll Tamás"},
+  {id:12,title:"Jóindulatú prosztatamegnagyobbodás – BPH",authors:"Bécsi Áron"},
+  {id:13,title:"Férfi nemzőképesség zavarai",authors:"Szabó Anett, Kopa Zsolt"},
+  {id:14,title:"A férfiak szexuális zavarai",authors:"Vargha Judit, Kopa Zsolt"},
+  {id:15,title:"Gyermekurológia",authors:"Nyirády Péter, Kiss András"},
+  {id:16,title:"A vese daganatai",authors:"Szendrői Attila, Szalontai János"},
+  {id:17,title:"Vesemedence és ureterdaganat",authors:"Riesz Péter, Kovács Petra Terézia, Széles Ádám"},
+  {id:18,title:"A húgyhólyag nem-izominfiltrativ (felületes) daganata",authors:"Riesz Péter, Széles Ádám, Kovács Petra Terézia"},
+  {id:19,title:"A húgyhólyag izominfiltrativ daganata",authors:"Keszthelyi Attila, Dér Bálint"},
+  {id:20,title:"A prosztatarák előfordulása, tünetei, kórismézése",authors:"Hüttl András, Molnár Péter József"},
+  {id:21,title:"A szervre lokalizált prosztatarák kezelése",authors:"Nyirády Péter, Kocsmár Ildikó"},
+  {id:22,title:"Előrehaladott prosztatarák kezelése (hormonterápia)",authors:"Szűcs Miklós, Szalontai János"},
+  {id:23,title:"Előrehaladott prosztatarák kezelése (kemoterápia)",authors:"Vargha Judit"},
+  {id:24,title:"Heredaganatok",authors:"Szűcs Miklós, Weigert Tamás"},
+  {id:25,title:"A vérvizelés (haematuria) kivizsgálása és differenciáldiagnosztikája",authors:"Majoros Attila, Ács Júlia"}
+];
+
+const GLOSSARY={
+"oligohydramnion":"Csökkent magzatvíz mennyiség; a magzat húgyúti rendszerének fejlődési rendellenessége esetén fordul elő.",
+"dystopiás vese":"Nem a szokásos anatómiai helyen elhelyezkedő vese.",
+"Potter-beosztás":"A vesecysták mérete és eloszlása alapján meghatározott osztályozási rendszer.",
+"VUR":"Vesicoureteralis reflux – a vizelet visszaáramlása a húgyhólyagból az ureterbe és a vesemedencébe.",
+"Weigert–Mayer-szabály":"A kettős ureter rendszer szájadékainak elhelyezkedését leíró anatómiai szabály.",
+"isthmus":"Patkóvese esetén a két vesefelet összekötő szövethíd.",
+"epispadiasis":"A húgycső dorsalis falának záródási zavara.",
+"meatusstenosis":"A külső húgycsőnyílás szűkülete.",
+"paraphimosis":"A fityma a makk mögé szorul és nem helyezhető vissza, vénás pangást okozva.",
+"circumcisio":"Körülmetélés; a fitymabőr sebészi eltávolítása.",
+"laparoszkópia":"Minimálisan invazív sebészeti technika, kamerával végzett hasűri beavatkozás.",
+"plexus pampiniformis":"A here és mellékhere vénás hálózata az ondózsinórban.",
+"uroflowmetria":"A vizeletáramlás erősségének és mintázatának műszeres mérése.",
+"haematuria":"Kóros mennyiségű vér (vörösvérsejt) jelenléte a vizeletben.",
+"hólyagtamponád":"Véralvadékokkal feszesen kitöltött húgyhólyag, vizelési képtelenséggel.",
+"hysterectomia":"A méh sebészi eltávolítása.",
+"urethrorrhagia":"Húgycsővérzés, a húgycső sérülésének jele.",
+"uretrográfia":"A húgycső kontrasztanyagos röntgenvizsgálata.",
+"epicystostomia":"Bőrön keresztüli húgyhólyag-megcsapolás (suprapubicus katéter).",
+"péniszfractúra":"A hímvessző barlangos testeinek kötőszövetes tokjának (tunica albuginea) repedése.",
+"heretorzió":"Az ondózsinór megcsavarodása, a here vérellátásának megszakadásával.",
+"dysuria":"Nehéz, fájdalmas vizelés.",
+"pollakisuria":"Kórosan gyakori vizeletürítés, kis vizeletmennyiséggel.",
+"urethrotomia interna":"A húgycsőszűkület endoszkópos bemetszése.",
+"vesicovaginalis sipoly":"Kóros járat a húgyhólyag és a hüvely között.",
+"vesicoenteralis sipoly":"Kóros járat a húgyhólyag és a bél között.",
+"ileus":"Bélelzáródás; a belek mozgásának vagy perisztaltikájának megszűnése.",
+"McBurney-pont":"A jobb alsó hasfalon elhelyezkedő nyomásérzékeny pont vakbélgyulladás esetén.",
+"diverticulitis":"A vastagbél falában kialakult tasakok (divertikulumok) gyulladása.",
+"nephrolithiasis":"Vesekövesség; kőképződés a vesékben.",
+"pyelonephritis":"A vesemedence és veseparenchyma bakteriális gyulladása.",
+"cystitis":"Húgyhólyag-gyulladás.",
+"epididymitis":"Mellékhere-gyulladás.",
+"oliguria":"Csökkent vizeletmennyiség, 24 óra alatt 500 ml-nél kevesebb.",
+"anuria":"A vizeletkiválasztás megszűnése, 24 óra alatt 100 ml-nél kevesebb.",
+"BPH":"Benignus prostata hyperplasia – a prosztata jóindulatú megnagyobbodása.",
+"cisztoszkópia":"A húgyhólyag belső felszínének endoszkópos vizsgálata.",
+"vizeletinkontinencia":"Bármely akaratlan vizeletvesztés.",
+"nocturia":"Éjszakai gyakori vizelés (>1 alkalommal éjszakánként).",
+"enuresis":"Akaratlan éjszakai vizeletelfolyás.",
+"antikolinergikumok":"A muszkarin receptorokat gátló gyógyszerek, csökkentik a hólyag túlműködését.",
+"urodinamikai vizsgálat":"Az alsó húgyutak funkcionális vizsgálata katéteres nyomásméréssel.",
+"IVP":"Intravénás pielográfia – a vese és húgyutak kontrasztanyagos röntgenvizsgálata.",
+"PI-RADS":"Prostate Imaging Reporting and Data System – a prosztata MR értékelési rendszere.",
+"renográfia":"A vesék funkcionális izotópos vizsgálata.",
+"pyonephrosis":"Gennyes vese; fertőzött, lezárt üregrendszer.",
+"pentosan-poliszulfát":"Az interstitialis cystitis kezelésére alkalmazott orális gyógyszer.",
+"orchitis":"Heregyulladás.",
+"ESWL":"Extracorporal Shock Wave Lithotripsy – testen kívüli lökéshullámmal végzett kőzúzás.",
+"URS":"Ureteroszkópia – a húgyvezeték endoszkópos vizsgálata és kőeltávolítás.",
+"PCNL":"Percutan nephrolithotripsia – bőrön keresztüli vesekő-eltávolítás.",
+"Fournier-gangraena":"A külső nemi szervek és gát területén kialakuló súlyos, fascia mentén terjedő nekrotizáló gyulladás.",
+"balanoposthitis":"A makk és az előbőr gyulladása.",
+"lichen sclerosus":"Idiopathiás, idült gyulladásos bőrbetegség, amely a makk és előbőr hegesedéséhez vezet.",
+"induratio penis plastica":"Peyronie-kór; a hímvessző kóros görbülete a tunica albuginea fibrosisa miatt.",
+"IPSS":"International Prostate Symptom Score – nemzetközi prosztata tünetértékelő kérdőív.",
+"TURP":"Prosztata transurethralis resectiója – a BPH arany standard műtéti kezelése.",
+"TUR-szindróma":"Monopoláris TURP során az ionszegény mosófolyadék felszívódása miatti hipoozmoláris hypervolaemia.",
+"azoospermia":"A spermiumok teljes hiánya az ondóban.",
+"oligozoospermia":"Csökkent spermiumkoncentráció az ondóban.",
+"asthenozoospermia":"Csökkent spermium-mozgékonyság.",
+"teratozoospermia":"Kóros spermium-morfológia.",
+"varicocele":"A here vénás hálózatának (plexus pampiniformis) kóros tágulata.",
+"hypogonadismus":"Csökkent nemi hormontermelés (tesztoszteronhiány).",
+"erektilis diszfunkció":"A hímvessző elégtelen merevedési képessége.",
+"PDE5-gátlók":"Foszfodiészteráz-5 gátló gyógyszerek (sildenafil, tadalafil stb.) az erekciós zavar kezelésére.",
+"Peyronie-betegség":"Induratio penis plastica – a hímvessző tunica albugineájának fibrosisa okozta görbület.",
+"VUR":"Vesicoureteralis reflux – vizelet visszaáramlása a húgyhólyagból a felső húgyutakba.",
+"phimosis":"Fitymaszűkület; a fityma nem húzható hátra a makk mögé.",
+"hydronephrosis":"A veseüregrendszer kóros tágulata a vizelet elfolyásának akadályoztatása miatt.",
+"nephrectomia":"Vese sebészi eltávolítása.",
+"RCC":"Renal Cell Carcinoma – vesedaganat, veserák.",
+"Bosniak-klasszifikáció":"A vesecysták képalkotó jellemzők alapján történő osztályozása (I-IV. kategória).",
+"parciális nephrectomia":"Vesemegtartó műtét, a tumor eltávolítása ép veseszövet megőrzésével.",
+"radikális nephrectomia":"A teljes vese, mellékvese és Gerota-fascia eltávolítása daganat miatt.",
+"TKI":"Tirozinkináz-inhibitor – célzott terápia vesedaganat kezelésében.",
+"urothelialis carcinoma":"A húgyutak nyálkahártyájából (urothel) kiinduló rosszindulatú daganat.",
+"BCG-terápia":"Intravesicalis Bacillus Calmette-Guérin kezelés felületes hólyagdaganat esetén.",
+"radikális cystectomia":"A húgyhólyag teljes sebészi eltávolítása daganat miatt.",
+"neobladder":"Bélszakaszból kialakított új húgyhólyag radikális cystectomia után.",
+"PSA":"Prosztata-specifikus antigén – a prosztata által termelt fehérje, szűrővizsgálatban használatos.",
+"Gleason-score":"A prosztatarák szövettani differenciáltságát jellemző pontrendszer.",
+"radikális prostatectomia":"A prosztata és az ondóhólyagok teljes sebészi eltávolítása prosztatarák esetén.",
+"LHRH-agonista":"A hypothalamus-hypophysis-gonadalis tengely gátlásával kasztrációs szintű tesztoszteront eredményező gyógyszer.",
+"LHRH-antagonista":"Közvetlenül gátló hatású hormonkészítmény, gyors tesztoszteronszint-csökkenést eredményez.",
+"antiandrogén":"A tesztoszteron hatását a receptoron gátló gyógyszer.",
+"kemoterápia":"Daganatsejtek pusztítására alkalmazott szisztémás gyógyszeres kezelés.",
+"docetaxel":"Taxán típusú kemoterápiás szer, előrehaladott prosztatarák kezelésében alkalmazott.",
+"cabazitaxel":"Második vonalbeli kemoterápiás szer prosztatarák kezelésében.",
+"seminoma":"A here csírasejtes daganatának sugárérzékeny altípusa.",
+"non-seminoma":"A here csírasejtes daganatainak agresszívebb altípusa.",
+"AFP":"Alfa-fetoprotein – tumormarker, non-seminomás heredaganatokban emelkedett.",
+"béta-HCG":"Humán choriogonadotropin – tumormarker, choriocarcinomában emelkedett.",
+"BEP-protokoll":"Bleomycin + Etoposid + Cisplatin kombinált kemoterápiás séma heredaganatok kezelésében.",
+"RLA":"Retroperitonealis lymphadenectomia – a retroperitonealis nyirokcsomók sebészi eltávolítása.",
+"macrohaematuria":"Szabad szemmel látható véres vizelet.",
+"microhaematuria":"Csak laboratóriumi módszerekkel kimutatható vér a vizeletben.",
+"vizeletcitológia":"A vizeletüledékben található sejtek mikroszkópos vizsgálata daganatsejtek kimutatására.",
+"TUR":"Transurethralis resectio – húgycsövön keresztüli endoszkópos szöveteltávolítás.",
+"sentinel nyirokcsomó":"Az első nyirokcsomó, ahová a daganat nyirokúton terjed.",
+"cryptorchismus":"Rejtett here; a here nem szállt le a herezacskóba.",
+"testicularis dysgenesis szindróma":"Fejlődési rendellenesség-együttes: hereleszállási zavar, hypospadiasis, csökkent termékenység, heredaganat-kockázat.",
+"spermatogenesis":"A spermiumok képződési és érési folyamata a herében.",
+"GnRH":"Gonadotropin-releasing hormone – a hypothalamusban termelődő hormon, amely az LH és FSH kiválasztását szabályozza."
+};
+
+// ===== AUTHORS DATABASE =====
+const AUTHORS={
+"Nyirády Péter":{
+  title:"Prof. Dr.",role:"egyetemi tanár – igazgató",
+  photo:"https://semmelweis.hu/urologia/files/2015/07/NyiradyP-200x300.jpg",
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/nyirady-peter/",
+  bio:"Az MTA doktora, FEBU. Urológus és andrológus szakorvos. Az ÁOK dékánja."
+},
+"Keszthelyi Attila":{
+  title:"Dr.",role:"egyetemi docens – ált. klinikaigazgató-helyettes",
+  photo:"https://semmelweis.hu/urologia/files/2015/07/KeszthelyiA-200x300.jpg",
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/keszthelyi-attila/",
+  bio:"Urológus szakorvos. 1991 óta a Semmelweis Egyetem munkatársa."
+},
+"Bánfi Gergely":{
+  title:"Dr.",role:"egyetemi adjunktus",
+  photo:"https://semmelweis.hu/urologia/files/2015/07/BanfiG-200x300.jpg",
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/banfi-gergely/",
+  bio:"Urológus szakorvos, FEBU. Ph.D. Rekonstrukciós urológia."
+},
+"Kubik András":{
+  title:"Dr.",role:"klinikai szakorvos",
+  photo:"https://semmelweis.hu/urologia/files/2015/07/KubikA-200x300.jpg",
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/kubik-andras/",
+  bio:"Urológus szakorvos. Sürgősségi urológia, akut has differenciáldiagnosztika."
+},
+"Majoros Attila":{
+  title:"Dr.",role:"habilitált egyetemi docens",
+  photo:"https://semmelweis.hu/urologia/files/2015/07/MajorosA-200x300.jpg",
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/majoros-attila/",
+  bio:"Urológus szakorvos, FEBU. Urodinamika, inkontinencia, nőgyógyászati urológia."
+},
+"Romics Miklós":{
+  title:"Dr.",role:"egyetemi adjunktus",
+  photo:"https://semmelweis.hu/urologia/files/2015/07/RomicsM-200x300.jpg",
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/romics-miklos/",
+  bio:"Urológus szakorvos. Prosztatagyulladás, alsó húgyúti fertőzések."
+},
+"Horváth András":{
+  title:"Dr.",role:"egyetemi adjunktus",
+  photo:"https://semmelweis.hu/urologia/files/2015/10/Horv%C3%A1th-A-2015-209x300.jpg",
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/horvath-andras/",
+  bio:"Urológus szakorvos, FEBU. Onkológia szakvizsga. Képalkotó diagnosztika."
+},
+"Szalontai János":{
+  title:"Dr.",role:"klinikai szakorvos",
+  photo:"https://semmelweis.hu/urologia/files/2017/08/DSC_0171-200x300.jpg",
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/szalontai-janos/",
+  bio:"Urológus szakorvos. Képalkotó eljárások, uroonkológia."
+},
+"Széll Tamás":{
+  title:"Dr.",role:"klinikai szakorvos",
+  photo:"https://semmelweis.hu/urologia/files/2015/07/SzellT-200x300.jpg",
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/szell-tamas/",
+  bio:"Urológus szakorvos. Húgycsősebészet, daganatsebészet, andrológia."
+},
+"Vargha Judit":{
+  title:"Dr.",role:"klinikai szakorvos",
+  photo:"https://semmelweis.hu/urologia/files/2015/07/VarghaJ-200x300.jpg",
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/vargha-judit/",
+  bio:"Urológus szakorvos. Húgyúti kövesség, kemoterápia, szexuális zavarok."
+},
+"Szendrői Attila":{
+  title:"Dr.",role:"egyetemi adjunktus",
+  photo:"https://semmelweis.hu/urologia/files/2015/07/SzendroiA-200x300.jpg",
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/szendroi-attila/",
+  bio:"Urológus szakorvos, Ph.D. Uroonkológia, vesedaganatok."
+},
+"Bécsi Áron":{
+  title:"Dr.",role:"klinikai szakorvos",
+  photo:"https://semmelweis.hu/urologia/files/2015/07/BecsiA-200x300.jpg",
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/becsi-aron/",
+  bio:"Urológus szakorvos. BPH, alsó húgyúti tünetek, minimálisan invazív technikák."
+},
+"Szabó Anett":{
+  title:"Dr.",role:"rezidens",
+  photo:null,
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/",
+  bio:"Rezidens orvos, Semmelweis Egyetem Urológiai Klinika."
+},
+"Kopa Zsolt":{
+  title:"Dr.",role:"egyetemi docens",
+  photo:"https://semmelweis.hu/urologia/files/2015/07/KopaZs-200x300.jpg",
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/kopa-zsolt/",
+  bio:"Urológus és andrológus szakorvos. Az Andrológiai Centrum vezetője."
+},
+"Kiss András":{
+  title:"Dr.",role:"gyermeksebész",
+  photo:null,
+  url:"https://heimpalkorhaz.hu",
+  bio:"Heim Pál Országos Gyermekgyógyászati Intézet. Gyermekurológia."
+},
+"Riesz Péter":{
+  title:"Dr.",role:"habilitált egyetemi docens – igazgatóhelyettes",
+  photo:"https://semmelweis.hu/urologia/files/2015/07/RieszP-200x300.jpg",
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/riesz-peter/",
+  bio:"Urológus szakorvos, FEBU. Uroonkológia, felső húgyúti daganatok."
+},
+"Kovács Petra Terézia":{
+  title:"Dr.",role:"klinikai szakorvos",
+  photo:"https://semmelweis.hu/urologia/files/2017/09/Kov%C3%A1csPetraTer%C3%A9zia-200x300.jpeg",
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/kovacs-petra-terezia/",
+  bio:"Urológus szakorvos, summa cum laude. Uroonkológia."
+},
+"Széles Ádám":{
+  title:"Dr.",role:"rezidens",
+  photo:null,
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/",
+  bio:"Rezidens orvos, Semmelweis Egyetem Urológiai Klinika."
+},
+"Hüttl András":{
+  title:"Dr.",role:"klinikai szakorvos",
+  photo:"https://semmelweis.hu/urologia/files/2015/07/HuttlA-200x300.jpg",
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/huttl-andras/",
+  bio:"Urológus szakorvos. UC Davis kutatói ösztöndíjas. Prosztatarák."
+},
+"Molnár Péter József":{
+  title:"Dr.",role:"klinikai szakorvos",
+  photo:null,
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/",
+  bio:"Urológus szakorvos. Prosztatarák diagnosztika."
+},
+"Kocsmár Ildikó":{
+  title:"Dr.",role:"rezidens",
+  photo:null,
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/",
+  bio:"Rezidens orvos, Semmelweis Egyetem Urológiai Klinika."
+},
+"Szűcs Miklós":{
+  title:"Dr.",role:"klinikai főorvos",
+  photo:"https://semmelweis.hu/urologia/files/2015/07/SzucsM-200x300.jpg",
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/szucs-miklos/",
+  bio:"Urológus szakorvos. Előrehaladott prosztatarák, heredaganatok."
+},
+"Weigert Tamás":{
+  title:"Dr.",role:"szakorvos",
+  photo:null,
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/",
+  bio:"Urológus szakorvos. Heredaganatok."
+},
+"Ács Júlia":{
+  title:"Dr.",role:"rezidens",
+  photo:null,
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/",
+  bio:"Rezidens orvos, Semmelweis Egyetem Urológiai Klinika."
+},
+"Dér Bálint":{
+  title:"Dr.",role:"rezidens",
+  photo:null,
+  url:"https://semmelweis.hu/urologia/altalanos-informaciok/a-klinika-orvosai/",
+  bio:"Rezidens orvos, Semmelweis Egyetem Urológiai Klinika. Fejlődési rendellenességek."
+}
+};
+
+// Compute which chapters each author wrote
+Object.keys(AUTHORS).forEach(name=>{
+  AUTHORS[name].chapters=CHAPTERS.filter(ch=>ch.authors.includes(name)).map(ch=>ch.id);
+});
+
+// ===== STATE =====
+let currentChapter = 0;
+let tocDocked = false;
+const totalChapters = CHAPTERS.length;
+
+// ===== DOM =====
+const $=s=>document.querySelector(s);
+const $$=s=>document.querySelectorAll(s);
+const main=$('#main');
+const progressBar=$('#progressBar');
+const counter=$('#chapterCounter');
+const prevBtn=$('#prevBtn');
+const nextBtn=$('#nextBtn');
+const tocNav=$('#tocNav');
+const tocOverlay=$('#tocOverlay');
+const tocList=$('#tocList');
+const gridOverlay=$('#gridOverlay');
+const gridContainer=$('#gridContainer');
+const tooltip=$('#tooltip');
+
+// ===== BUILD TOC =====
+CHAPTERS.forEach((ch,i)=>{
+  const li=document.createElement('li');
+  li.innerHTML=`<a href="#ch${i}" data-ch="${i}"><span class="num">${i===0?'':i+'.'}</span> ${ch.title}<span class="dots"></span></a><div class="authors">${ch.authors}</div>`;
+  tocList.appendChild(li);
+});
+
+// ===== BUILD GRID =====
+CHAPTERS.forEach((ch,i)=>{
+  const card=document.createElement('div');
+  card.className='grid-card';
+  card.dataset.ch=i;
+  card.innerHTML=`<div class="gc-num">${i===0?'Előszó':i+'. fejezet'}</div><div class="gc-title">${ch.title}</div><div class="gc-authors">${ch.authors}</div>`;
+  gridContainer.appendChild(card);
+});
+
+// ===== NAVIGATION =====
+let sliding=false;
+function goToChapter(n,skipAnim){
+  if(n<0||n>=totalChapters||sliding)return;
+  const old=currentChapter;
+  const dir=n>old?1:-1; // 1=forward, -1=back
+  const prev=$(`#ch${old}`);
+  const next=$(`#ch${n}`);
+  if(!next)return;
+
+  if(old===n||skipAnim){
+    // No animation — just show
+    $$('.chapter').forEach(c=>{c.classList.remove('active','slide-out-left','slide-out-right','slide-in-left','slide-in-right','no-transition')});
+    next.classList.add('active');
+    next.scrollTop=0;
+  } else {
+    sliding=true;
+    // Position incoming off-screen on the correct side (no transition)
+    next.classList.add('no-transition');
+    next.classList.remove('active','slide-out-left','slide-out-right');
+    next.classList.add(dir>0?'slide-in-right':'slide-in-left');
+    // Force reflow
+    void next.offsetWidth;
+    next.classList.remove('no-transition');
+
+    // Slide old out, new in
+    if(prev){
+      prev.classList.remove('active');
+      prev.classList.add(dir>0?'slide-out-left':'slide-out-right');
+    }
+    next.classList.remove('slide-in-right','slide-in-left');
+    next.classList.add('active');
+    next.scrollTop=0;
+
+    // Cleanup after transition
+    setTimeout(()=>{
+      if(prev){prev.classList.remove('slide-out-left','slide-out-right')}
+      sliding=false;
+    },420);
+  }
+
+  currentChapter=n;
+  progressBar.style.width=((n+1)/totalChapters*100)+'%';
+  counter.textContent=`${n+1}/${totalChapters}`;
+  prevBtn.disabled=n===0;
+  nextBtn.disabled=n===totalChapters-1;
+  $$('#tocList li').forEach((li,i)=>{li.classList.toggle('active',i===n)});
+  $$('.grid-card').forEach((c,i)=>{c.classList.toggle('active',i===n)});
+  history.replaceState(null,null,`#ch${n}`);
+  if(!tocDocked)closeTOC();
+  closeGrid();
+}
+
+prevBtn.onclick=()=>goToChapter(currentChapter-1);
+nextBtn.onclick=()=>goToChapter(currentChapter+1);
+
+// ===== TOC =====
+function toggleTOC(){
+  if(tocDocked)return; // docked mode: always visible, button does nothing
+  tocNav.classList.toggle('open');tocOverlay.classList.toggle('open');
+}
+function closeTOC(){
+  if(tocDocked)return;
+  tocNav.classList.remove('open');tocOverlay.classList.remove('open');
+}
+function dockTOC(){
+  tocDocked=true;
+  document.body.classList.add('toc-docked');
+  tocNav.classList.add('open');
+  tocOverlay.classList.remove('open');
+  $('#dockBtn').innerHTML='<i class="ph ph-push-pin-slash"></i>';
+  $('#dockBtn').title='Leválasztás';
+}
+function undockTOC(){
+  tocDocked=false;
+  document.body.classList.remove('toc-docked');
+  tocNav.classList.remove('open');
+  $('#dockBtn').innerHTML='<i class="ph ph-push-pin"></i>';
+  $('#dockBtn').title='Rögzítés';
+}
+function toggleDock(){tocDocked?undockTOC():dockTOC()}
+$('#tocBtn').onclick=toggleTOC;
+$('#tocCloseBtn').onclick=()=>{tocDocked?undockTOC():closeTOC()};
+$('#dockBtn').onclick=toggleDock;
+tocOverlay.onclick=closeTOC;
+tocList.onclick=e=>{const a=e.target.closest('a[data-ch]');if(a){e.preventDefault();goToChapter(+a.dataset.ch)}};
+
+// ===== TOC TABS =====
+const tocSearchBox=$('#tocSearchBox');
+const tocSearchInput=$('#tocSearchInput');
+const searchResults=$('#searchResults');
+const authorListEl=$('#authorList');
+
+function switchTocTab(tabName){
+  $$('.toc-tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tabName));
+  $$('.toc-pane').forEach(p=>p.classList.remove('active'));
+  $(`#pane${tabName.charAt(0).toUpperCase()+tabName.slice(1)}`).classList.add('active');
+  tocSearchBox.style.display=tabName==='search'?'flex':'none';
+  if(tabName==='search')tocSearchInput.focus();
+}
+$$('.toc-tab').forEach(tab=>{
+  tab.onclick=()=>switchTocTab(tab.dataset.tab);
+});
+
+// ===== BUILD AUTHOR LIST =====
+(function(){
+  // Group authors by role category
+  const groups={
+    "Egyetemi tanárok és docensek":[],
+    "Adjunktusok":[],
+    "Szakorvosok":[],
+    "Rezidensek":[],
+    "Külső szerzők":[]
+  };
+  Object.keys(AUTHORS).forEach(name=>{
+    const a=AUTHORS[name];
+    if(a.chapters.length===0)return; // skip non-chapter authors
+    const r=a.role.toLowerCase();
+    if(r.includes('tanár')||r.includes('docens')||r.includes('igazgató')||r.includes('főorvos'))groups["Egyetemi tanárok és docensek"].push(name);
+    else if(r.includes('adjunktus'))groups["Adjunktusok"].push(name);
+    else if(r.includes('rezidens'))groups["Rezidensek"].push(name);
+    else if(r.includes('gyermek')||name==='Kiss András')groups["Külső szerzők"].push(name);
+    else groups["Szakorvosok"].push(name);
+  });
+  let html='';
+  Object.entries(groups).forEach(([groupTitle,names])=>{
+    if(names.length===0)return;
+    html+=`<div class="author-group-title">${groupTitle}</div>`;
+    names.forEach(name=>{
+      const a=AUTHORS[name];
+      const photoHtml=a.photo
+        ?`<img class="author-entry-photo" src="${a.photo}" alt="${name}" loading="lazy">`
+        :`<div class="author-entry-photo-placeholder"><i class="ph ph-user"></i></div>`;
+      const chNames=a.chapters.map(id=>`${id}.`).join(', ');
+      html+=`<div class="author-entry" data-author="${name}">
+        ${photoHtml}
+        <div class="author-entry-info">
+          <div class="author-entry-name">${a.title} ${name}</div>
+          <div class="author-entry-role">${a.role}</div>
+          <div class="author-entry-chapters"><i class="ph ph-book-open-text"></i> ${a.chapters.length} fejezet: ${chNames}</div>
+        </div>
+      </div>`;
+    });
+  });
+  authorListEl.innerHTML=html;
+})();
+// Click author entry -> show first chapter
+authorListEl.addEventListener('click',e=>{
+  const entry=e.target.closest('.author-entry');
+  if(entry){
+    const name=entry.dataset.author;
+    const a=AUTHORS[name];
+    if(a&&a.chapters.length>0)goToChapter(a.chapters[0]);
+  }
+});
+
+// ===== FULL TEXT SEARCH =====
+let searchTimeout=null;
+function performSearch(query){
+  if(!query||query.length<2){
+    searchResults.innerHTML='<div class="search-empty">Legalább 2 karakter szükséges</div>';
+    return;
+  }
+  const q=query.toLowerCase();
+  const results=[];
+  $$('.chapter').forEach(ch=>{
+    const chId=parseInt(ch.dataset.chapter);
+    const chInfo=CHAPTERS[chId];
+    if(!chInfo)return;
+    const text=ch.textContent;
+    const lower=text.toLowerCase();
+    let idx=lower.indexOf(q);
+    while(idx!==-1&&results.length<50){
+      // Extract snippet around match
+      const start=Math.max(0,idx-40);
+      const end=Math.min(text.length,idx+query.length+40);
+      let snippet=text.substring(start,end).replace(/\s+/g,' ');
+      if(start>0)snippet='…'+snippet;
+      if(end<text.length)snippet+='…';
+      // Highlight match
+      const re=new RegExp('('+query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
+      snippet=snippet.replace(re,'<mark>$1</mark>');
+      results.push({chId,title:chInfo.title,snippet});
+      idx=lower.indexOf(q,idx+query.length);
+    }
+  });
+  if(results.length===0){
+    searchResults.innerHTML=`<div class="search-empty">Nincs találat: „${query}"</div>`;
+    return;
+  }
+  // Group by chapter, show max 3 per chapter
+  const grouped={};
+  results.forEach(r=>{
+    if(!grouped[r.chId])grouped[r.chId]={title:r.title,snippets:[]};
+    if(grouped[r.chId].snippets.length<3)grouped[r.chId].snippets.push(r.snippet);
+  });
+  let html=`<div style="font-size:0.72rem;color:var(--muted);padding:4px 0 8px">${results.length} találat</div>`;
+  Object.entries(grouped).forEach(([chId,data])=>{
+    data.snippets.forEach(sn=>{
+      html+=`<div class="search-result-item" data-ch="${chId}">
+        <div class="sr-chapter">${chId===0?'Előszó':chId+'. '+data.title}</div>
+        <div class="sr-snippet">${sn}</div>
+      </div>`;
+    });
+  });
+  searchResults.innerHTML=html;
+}
+tocSearchInput.addEventListener('input',()=>{
+  clearTimeout(searchTimeout);
+  searchTimeout=setTimeout(()=>performSearch(tocSearchInput.value.trim()),250);
+});
+searchResults.addEventListener('click',e=>{
+  const item=e.target.closest('.search-result-item');
+  if(item)goToChapter(+item.dataset.ch);
+});
+
+// ===== GRID =====
+function toggleGrid(){gridOverlay.classList.toggle('open')}
+function closeGrid(){gridOverlay.classList.remove('open')}
+$('#gridBtn').onclick=toggleGrid;
+$('#gridClose').onclick=closeGrid;
+gridContainer.onclick=e=>{const c=e.target.closest('.grid-card');if(c)goToChapter(+c.dataset.ch)};
+
+// ===== KEYBOARD =====
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+  switch(e.key){
+    case'ArrowLeft':goToChapter(currentChapter-1);break;
+    case'ArrowRight':goToChapter(currentChapter+1);break;
+    case't':case'T':toggleTOC();break;
+    case'g':case'G':toggleGrid();break;
+    case'Escape':closeTOC();closeGrid();break;
+    case'Home':goToChapter(0);break;
+    case'End':goToChapter(totalChapters-1);break;
+    case'd':case'D':toggleTheme();break;
+  }
+});
+
+// ===== SWIPE =====
+let touchStartX=0;
+main.addEventListener('touchstart',e=>{touchStartX=e.changedTouches[0].clientX},{passive:true});
+main.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-touchStartX;
+  if(Math.abs(dx)>60){dx>0?goToChapter(currentChapter-1):goToChapter(currentChapter+1)}
+},{passive:true});
+
+// ===== SHIFT+SCROLL = chapter nav =====
+let shiftWheelCooldown=false;
+main.addEventListener('wheel',e=>{
+  if(!e.shiftKey)return; // normal scroll/ctrl+scroll untouched
+  e.preventDefault();
+  if(shiftWheelCooldown)return;
+  shiftWheelCooldown=true;
+  if(e.deltaY>0||e.deltaX>0)goToChapter(currentChapter+1);
+  else goToChapter(currentChapter-1);
+  setTimeout(()=>{shiftWheelCooldown=false},400);
+},{passive:false});
+
+// ===== TOOLTIPS =====
+function showTooltip(e,term,text){
+  tooltip.innerHTML=`<strong>${term}</strong><br>${text}`;
+  tooltip.classList.add('visible');
+  const r=e.target.getBoundingClientRect();
+  let top=r.bottom+8,left=r.left;
+  if(top+150>window.innerHeight)top=r.top-tooltip.offsetHeight-8;
+  if(left+320>window.innerWidth)left=window.innerWidth-330;
+  if(left<10)left=10;
+  tooltip.style.top=top+'px';tooltip.style.left=left+'px';
+}
+function hideTooltip(){tooltip.classList.remove('visible')}
+
+document.addEventListener('mouseover',e=>{
+  const dfn=e.target.closest('dfn[data-term]');
+  if(dfn){const t=dfn.dataset.term;const def=GLOSSARY[t];if(def)showTooltip(e,t,def)}
+});
+document.addEventListener('mouseout',e=>{if(e.target.closest('dfn'))hideTooltip()});
+document.addEventListener('click',e=>{
+  const dfn=e.target.closest('dfn[data-term]');
+  if(dfn){const t=dfn.dataset.term;const def=GLOSSARY[t];if(def)showTooltip(e,t,def);else hideTooltip()}
+  else hideTooltip();
+});
+
+// ===== THEME =====
+const themeBtn=$('#themeBtn');
+function getStoredTheme(){return localStorage.getItem('uro-theme')}
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  themeBtn.innerHTML=t==='dark'?'<i class="ph ph-sun"></i>':'<i class="ph ph-moon"></i>';
+  themeBtn.title=t==='dark'?'Világos téma (D)':'Sötét téma (D)';
+}
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme')||
+    (window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  const next=cur==='dark'?'light':'dark';
+  localStorage.setItem('uro-theme',next);
+  applyTheme(next);
+}
+themeBtn.onclick=toggleTheme;
+// apply saved or system preference
+(function(){
+  const saved=getStoredTheme();
+  if(saved){applyTheme(saved)}
+  else if(window.matchMedia('(prefers-color-scheme:dark)').matches){applyTheme('dark')}
+  else{applyTheme('light')}
+})();
+
+// ===== AUTHOR CARDS =====
+const authorCard=$('#authorCard');
+let authorCardTimer=null;
+
+function showAuthorCard(e,name){
+  const a=AUTHORS[name];
+  if(!a)return;
+  const photoHtml=a.photo
+    ?`<img class="author-card-photo" src="${a.photo}" alt="${name}" loading="lazy">`
+    :`<div class="author-card-photo-placeholder"><i class="ph ph-user"></i></div>`;
+  const chapList=a.chapters.map(id=>{
+    const ch=CHAPTERS[id];
+    return`<a href="#" onclick="event.preventDefault();goToChapter(${id});hideAuthorCard()" style="color:var(--crimson);font-size:0.72rem">${id}. ${ch.title.substring(0,30)}${ch.title.length>30?'…':''}</a>`;
+  }).join(', ');
+  authorCard.innerHTML=`
+    <div class="author-card-top">
+      ${photoHtml}
+      <div class="author-card-info">
+        <div class="author-card-name">${a.title} ${name}</div>
+        <div class="author-card-role">${a.role}</div>
+        <div class="author-card-affil">${a.bio}</div>
+      </div>
+    </div>
+    <div class="author-card-bottom">
+      <div class="author-card-chapters"><strong>${a.chapters.length}</strong> fejezet</div>
+      <a class="author-card-link" href="${a.url}" target="_blank" rel="noopener"><i class="ph ph-arrow-square-out"></i> Profil</a>
+    </div>`;
+  authorCard.classList.add('visible');
+  // Position near the trigger
+  const r=e.target.getBoundingClientRect();
+  let top=r.bottom+8,left=r.left;
+  if(top+220>window.innerHeight)top=r.top-authorCard.offsetHeight-8;
+  if(left+310>window.innerWidth)left=window.innerWidth-320;
+  if(left<10)left=10;
+  authorCard.style.top=top+'px';
+  authorCard.style.left=left+'px';
+}
+function hideAuthorCard(){authorCard.classList.remove('visible')}
+
+// Mouse events for author cards (show on hover, hide on leave with delay)
+document.addEventListener('mouseover',e=>{
+  const link=e.target.closest('.author-link');
+  if(link){
+    clearTimeout(authorCardTimer);
+    showAuthorCard(e,link.dataset.author);
+  }
+});
+document.addEventListener('mouseout',e=>{
+  const link=e.target.closest('.author-link');
+  if(link){
+    authorCardTimer=setTimeout(hideAuthorCard,300);
+  }
+});
+// Keep card open when mouse enters it
+authorCard.addEventListener('mouseover',()=>clearTimeout(authorCardTimer));
+authorCard.addEventListener('mouseleave',()=>{authorCardTimer=setTimeout(hideAuthorCard,200)});
+// Click on mobile
+document.addEventListener('click',e=>{
+  const link=e.target.closest('.author-link');
+  if(link){e.preventDefault();showAuthorCard(e,link.dataset.author);return}
+  if(!e.target.closest('.author-card'))hideAuthorCard();
+});
+
+// ===== TRANSFORM AUTHOR NAMES INTO LINKS =====
+$$('.ch-authors').forEach(el=>{
+  const text=el.textContent;
+  // Split by comma, try to match each name in AUTHORS
+  const parts=text.split(/,\s*/);
+  const html=parts.map(name=>{
+    const trimmed=name.trim();
+    if(AUTHORS[trimmed]){
+      return`<a class="author-link" data-author="${trimmed}" href="${AUTHORS[trimmed].url}" title="${AUTHORS[trimmed].title} ${trimmed} – ${AUTHORS[trimmed].role}">${trimmed}</a>`;
+    }
+    return trimmed;
+  }).join(', ');
+  el.innerHTML=html;
+});
+
+// ===== INIT =====
+const hash=window.location.hash.match(/ch(\d+)/);
+goToChapter(hash?+hash[1]:0,true);
+</script>
+</body>
+</html>

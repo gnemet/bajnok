@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A klinika orvosai – Urológiai Klinika</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  /* ===== CSS VARIABLES — based on Semmelweis SE18 theme ===== */
+  :root {
+    --se-blue:        #003F7D;   /* primary brand navy */
+    --se-blue-mid:    #005AA0;   /* link / nav hover */
+    --se-blue-light:  #0072BC;   /* accent blue */
+    --se-red:         #C8102E;   /* accent red (logo bar) */
+    --se-green:       #4A7C59;   /* sidebar section title stripe */
+    --se-grey-dark:   #333333;
+    --se-grey-mid:    #666666;
+    --se-grey-light:  #EEEEEE;
+    --se-border:      #D0D0D0;
+    --se-white:       #FFFFFF;
+    --se-bg:          #F5F5F5;
+
+    --font-sans: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+    --font-serif: 'Source Serif 4', Georgia, serif;
+
+    --max-width: 1140px;
+    --sidebar-width: 260px;
+    --content-gap: 32px;
+  }
+
+  /* ===== RESET ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body { font-family: var(--font-sans); color: var(--se-grey-dark); background: var(--se-white); line-height: 1.6; }
+  a { color: var(--se-blue-mid); text-decoration: none; }
+  a:hover { text-decoration: underline; color: var(--se-red); }
+  ul { list-style: none; }
+
+  /* ===== TOP UTILITY BAR ===== */
+  .top-bar {
+    background: var(--se-blue);
+    color: rgba(255,255,255,0.85);
+    font-size: 0.78rem;
+    letter-spacing: 0.01em;
+  }
+  .top-bar__inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 16px;
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+    justify-content: flex-end;
+  }
+  .top-bar a {
+    color: rgba(255,255,255,0.85);
+    display: inline-block;
+    padding: 7px 12px;
+    transition: background 0.15s;
+  }
+  .top-bar a:hover { background: var(--se-blue-light); text-decoration: none; color: #fff; }
+
+  /* ===== HEADER ===== */
+  .site-header {
+    background: var(--se-white);
+    border-bottom: 3px solid var(--se-blue);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  .site-header__inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 16px 16px 0;
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+  }
+  .site-header__logo img { height: 70px; width: auto; display: block; }
+  .site-header__logo-placeholder {
+    height: 70px;
+    width: 200px;
+    background: var(--se-blue);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 6px;
+    letter-spacing: 0.03em;
+  }
+  .site-header__titles { padding-bottom: 12px; }
+  .site-header__title {
+    font-family: var(--font-sans);
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: var(--se-blue);
+    line-height: 1.2;
+  }
+  .site-header__title a { color: inherit; }
+  .site-header__title a:hover { text-decoration: none; color: var(--se-red); }
+  .site-header__subtitle {
+    font-size: 0.85rem;
+    color: var(--se-grey-mid);
+    margin-top: 2px;
+  }
+
+  /* ===== MAIN NAV ===== */
+  .main-nav { background: var(--se-blue); }
+  .main-nav__inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 16px;
+    display: flex;
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+  .main-nav > .main-nav__inner > .nav-item { position: relative; }
+  .nav-item > a {
+    color: #fff;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 13px 15px;
+    display: block;
+    letter-spacing: 0.02em;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  .nav-item > a:hover,
+  .nav-item.active > a { background: var(--se-red); text-decoration: none; }
+  .nav-item.active > a { background: var(--se-red); }
+
+  /* Dropdown */
+  .nav-item { position: relative; }
+  .dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--se-blue);
+    min-width: 240px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  }
+  .nav-item:hover .dropdown { display: block; }
+  .dropdown a {
+    color: rgba(255,255,255,0.9);
+    font-size: 0.83rem;
+    padding: 9px 16px;
+    display: block;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .dropdown a:hover { background: var(--se-blue-light); text-decoration: none; color: #fff; }
+
+  /* ===== BREADCRUMB ===== */
+  .breadcrumb {
+    background: var(--se-bg);
+    border-bottom: 1px solid var(--se-border);
+    font-size: 0.8rem;
+    color: var(--se-grey-mid);
+  }
+  .breadcrumb__inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 8px 16px;
+  }
+  .breadcrumb a { color: var(--se-blue-mid); }
+  .breadcrumb a:hover { color: var(--se-red); }
+  .breadcrumb span { color: var(--se-grey-mid); margin: 0 5px; }
+
+  /* ===== PAGE LAYOUT ===== */
+  .page-layout {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 32px 16px 48px;
+    display: grid;
+    grid-template-columns: 1fr var(--sidebar-width);
+    gap: var(--content-gap);
+    align-items: start;
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  .main-content {}
+  .page-title {
+    font-family: var(--font-sans);
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--se-blue);
+    margin-bottom: 24px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--se-blue-light);
+    line-height: 1.2;
+  }
+
+  /* Doctor list */
+  .doctor-list { margin-bottom: 32px; }
+  .doctor-list__group-title {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--se-grey-mid);
+    margin: 28px 0 10px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--se-border);
+  }
+  .doctor-list__group-title:first-child { margin-top: 0; }
+
+  .doctor-entry {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--se-grey-light);
+    font-size: 0.95rem;
+    transition: background 0.1s;
+  }
+  .doctor-entry:hover { background: #f0f5fb; padding-left: 6px; border-radius: 3px; }
+  .doctor-entry a {
+    color: var(--se-blue-mid);
+    font-weight: 600;
+  }
+  .doctor-entry a:hover { color: var(--se-red); }
+  .doctor-entry__role {
+    color: var(--se-grey-mid);
+    font-size: 0.85rem;
+    font-style: italic;
+  }
+
+  .residents-note {
+    display: inline-block;
+    font-size: 0.82rem;
+    font-style: italic;
+    color: var(--se-grey-mid);
+    margin: 6px 0 2px;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {}
+  .sidebar-box {
+    background: var(--se-bg);
+    border: 1px solid var(--se-border);
+    border-top: 3px solid var(--se-blue);
+    margin-bottom: 24px;
+    padding: 0;
+  }
+  .sidebar-box__title {
+    background: var(--se-blue);
+    color: #fff;
+    font-size: 0.83rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 10px 14px;
+  }
+  .sidebar-box__body { padding: 12px 14px 14px; }
+
+  /* Sidebar nav */
+  .sidebar-nav a {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--se-grey-dark);
+    padding: 5px 0;
+    border-bottom: 1px solid var(--se-border);
+    transition: color 0.15s, padding 0.15s;
+  }
+  .sidebar-nav a:hover { color: var(--se-red); padding-left: 4px; text-decoration: none; }
+  .sidebar-nav a.active { color: var(--se-blue); font-weight: 600; }
+  .sidebar-nav li:last-child a { border-bottom: none; }
+
+  /* Sidebar sub-list */
+  .sidebar-nav .sub-list { padding-left: 12px; border-left: 2px solid var(--se-blue-light); margin: 4px 0 4px 6px; }
+  .sidebar-nav .sub-list a { font-size: 0.8rem; color: var(--se-grey-mid); border-bottom: none; padding: 3px 0; }
+  .sidebar-nav .sub-list a.active { color: var(--se-blue); font-weight: 600; }
+
+  /* Contact box */
+  .contact-box p { font-size: 0.83rem; line-height: 1.7; color: var(--se-grey-dark); }
+  .contact-box strong { color: var(--se-blue); }
+  .contact-box a { color: var(--se-blue-mid); font-size: 0.82rem; }
+
+  /* Foundation box */
+  .foundation-box p { font-size: 0.82rem; line-height: 1.65; color: var(--se-grey-dark); }
+  .foundation-box strong { color: var(--se-grey-dark); }
+
+  /* ===== FOOTER ===== */
+  .site-footer {
+    background: var(--se-blue);
+    color: rgba(255,255,255,0.75);
+    font-size: 0.82rem;
+    margin-top: 0;
+  }
+  .site-footer__top {
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    padding: 32px 16px;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .footer-section h3 {
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+  .footer-links { columns: 2; gap: 8px; }
+  .footer-links a {
+    display: block;
+    color: rgba(255,255,255,0.7);
+    padding: 2px 0;
+    font-size: 0.8rem;
+    break-inside: avoid;
+  }
+  .footer-links a:hover { color: #fff; text-decoration: none; }
+  .site-footer__bottom {
+    text-align: center;
+    padding: 14px 16px;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.5);
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    max-width: var(--max-width);
+    margin: 0 auto;
+  }
+  .site-footer__bottom a { color: rgba(255,255,255,0.6); }
+  .site-footer__bottom a:hover { color: #fff; text-decoration: none; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .page-layout { grid-template-columns: 1fr; }
+    .sidebar { order: -1; }
+    .main-nav__inner { flex-direction: column; gap: 0; }
+    .site-footer__top { grid-template-columns: 1fr; }
+    .footer-links { columns: 1; }
+    .top-bar__inner { justify-content: flex-start; flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP UTILITY BAR -->
+<div class="top-bar">
+  <div class="top-bar__inner">
+    <a href="#">Egyetem</a>
+    <a href="#">Neptun</a>
+    <a href="#">Moodle</a>
+    <a href="#">Telefonkönyv</a>
+    <a href="#">Webmail</a>
+    <a href="#">MySemmelweis</a>
+    <a href="#">Munkatársaknak</a>
+    <a href="#">Karrier</a>
+  </div>
+</div>
+
+<!-- SITE HEADER -->
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="site-header__logo">
+      <div class="site-header__logo-placeholder">Urológiai<br>Klinika<br>Logo</div>
+    </div>
+    <div class="site-header__titles">
+      <div class="site-header__title"><a href="#">Urológiai Klinika</a></div>
+      <div class="site-header__subtitle">Semmelweis Egyetem, Általános Orvostudományi Kar</div>
+    </div>
+  </div>
+
+  <!-- MAIN NAV -->
+  <nav class="main-nav" aria-label="Fő navigáció">
+    <div class="main-nav__inner">
+      <div class="nav-item active">
+        <a href="#">Klinikánk</a>
+        <ul class="dropdown">
+          <li><a href="#">A Klinika története</a></li>
+          <li><a href="#">Munkatársak</a></li>
+          <li><a href="#">Szakmai profilok</a></li>
+          <li><a href="#" style="color:#fff; font-weight:700;">A klinika orvosai</a></li>
+          <li><a href="#">Könyvtár</a></li>
+          <li><a href="#">Galéria</a></li>
+        </ul>
+      </div>
+      <div class="nav-item"><a href="#">Betegellátás</a></div>
+      <div class="nav-item"><a href="#">Prosztata szűrőnap</a></div>
+      <div class="nav-item"><a href="#">Oktatás</a></div>
+      <div class="nav-item"><a href="#">Kutatás</a></div>
+      <div class="nav-item"><a href="#">Antal Géza Alapítvány</a></div>
+      <div class="nav-item"><a href="#">Kapcsolat</a></div>
+    </div>
+  </nav>
+</header>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <div class="breadcrumb__inner">
+    <a href="#">Nyitólap</a><span>/</span>
+    <a href="#">Klinikánk</a><span>/</span>
+    A klinika orvosai
+  </div>
+</div>
+
+<!-- PAGE LAYOUT -->
+<div class="page-layout">
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <h1 class="page-title">A klinika orvosai</h1>
+
+    <div class="doctor-list">
+
+      <!-- Full faculty -->
+      <div class="doctor-entry">
+        <a href="#">Prof. Dr. Nyirády Péter</a>
+        <span class="doctor-entry__role">egyetemi tanár – igazgató</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Keszthelyi Attila</a>
+        <span class="doctor-entry__role">egyetemi docens – általános klinikaigazgató-helyettes</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Majoros Attila</a>
+        <span class="doctor-entry__role">habilitált egyetemi docens</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Riesz Péter</a>
+        <span class="doctor-entry__role">habilitált egyetemi docens</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Kopa Zsolt</a>
+        <span class="doctor-entry__role">egyetemi docens</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Szűcs Miklós</a>
+        <span class="doctor-entry__role">klinikai főorvos</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Bánfi Gergely</a>
+        <span class="doctor-entry__role">egyetemi adjunktus</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Horváth András</a>
+        <span class="doctor-entry__role">egyetemi adjunktus</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Szendrői Attila</a>
+        <span class="doctor-entry__role">egyetemi adjunktus</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Romics Miklós</a>
+        <span class="doctor-entry__role">egyetemi adjunktus</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Bécsi Áron</a>
+        <span class="doctor-entry__role">klinikai szakorvos</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Fazekas Tamás</a>
+        <span class="doctor-entry__role">klinikai szakorvos</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Hüttl András</a>
+        <span class="doctor-entry__role">klinikai szakorvos</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Juhász Dániel</a>
+        <span class="doctor-entry__role">klinikai szakorvos</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Kovács Petra Terézia</a>
+        <span class="doctor-entry__role">klinikai szakorvos</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Kubik András</a>
+        <span class="doctor-entry__role">klinikai szakorvos</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Molnár Péter József</a>
+        <span class="doctor-entry__role">klinikai szakorvos</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Módos Orsolya</a>
+        <span class="doctor-entry__role">klinikai szakorvos</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Szalontai János</a>
+        <span class="doctor-entry__role">klinikai szakorvos</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Széll Tamás</a>
+        <span class="doctor-entry__role">klinikai szakorvos</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Vargha Judit</a>
+        <span class="doctor-entry__role">klinikai szakorvos</span>
+      </div>
+
+      <!-- Residents -->
+      <p class="residents-note">Rezidensek</p>
+      <div class="doctor-entry"><span>Dr. Ács Júlia</span></div>
+      <div class="doctor-entry"><span>Dr. Bacsó Dániel</span></div>
+      <div class="doctor-entry"><span>Dr. Dér Bálint</span></div>
+      <div class="doctor-entry"><a href="#">Dr. Kocsmár Ildikó</a></div>
+      <div class="doctor-entry"><a href="#">Dr. Nagy Noémi Dalma</a></div>
+      <div class="doctor-entry"><span>Dr. Soós Áron</span></div>
+      <div class="doctor-entry"><span>Dr. Szabó Anett</span></div>
+      <div class="doctor-entry"><a href="#">Dr. Széles Ádám</a></div>
+
+      <!-- Volunteers -->
+      <p class="residents-note">Önkéntes segítő orvosok</p>
+      <div class="doctor-entry">
+        <a href="#">Dr. Pánovics József</a>
+        <span class="doctor-entry__role">ny. egyetemi docens</span>
+      </div>
+      <div class="doctor-entry">
+        <a href="#">Dr. Hamvas Antal</a>
+        <span class="doctor-entry__role">ny. egyetemi docens</span>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- Section navigation -->
+    <div class="sidebar-box">
+      <div class="sidebar-box__title">Klinikánk</div>
+      <div class="sidebar-box__body">
+        <nav class="sidebar-nav" aria-label="Klinikánk aloldalak">
+          <ul>
+            <li><a href="#">A Klinika története</a></li>
+            <li><a href="#">Munkatársak</a></li>
+            <li><a href="#">Szakmai profilok</a>
+              <ul class="sub-list">
+                <li><a href="#">Uroonkológia</a></li>
+                <li><a href="#">Kismedencei Fájdalom Munkacsoport</a></li>
+                <li><a href="#">Urodinamika</a></li>
+                <li><a href="#">Rekonstrukciós sebészet</a></li>
+                <li><a href="#">Kőzúzó kezelés – ESWL</a></li>
+                <li><a href="#">Endoscopos tevékenység</a></li>
+                <li><a href="#">Andrológiai Centrum</a></li>
+              </ul>
+            </li>
+            <li><a href="#" class="active">A klinika orvosai</a>
+              <ul class="sub-list">
+                <li><a href="#" class="active">Agócs Klára</a></li>
+                <li><a href="#">Bánfi Gergely</a></li>
+                <li><a href="#">Bécsi Áron</a></li>
+                <li><a href="#">Fazekas Tamás</a></li>
+                <li><a href="#">Hamvas Antal</a></li>
+                <li><a href="#">Horváth András</a></li>
+                <li><a href="#">Nyirády Péter</a></li>
+              </ul>
+            </li>
+            <li><a href="#">Könyvtár</a></li>
+            <li><a href="#">Galéria</a></li>
+            <li><a href="#">Médiamegjelenések</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Contact -->
+    <div class="sidebar-box">
+      <div class="sidebar-box__title">Elérhetőség</div>
+      <div class="sidebar-box__body contact-box">
+        <p>
+          Cím: 1082 Budapest Üllői út 78/b.<br>
+          Levelezési cím: 1085 Bp. Üllői út 26.<br>
+          Porta: 459-1500 / 51135 mellék<br><br>
+          Oktatási ügyek email:<br>
+          <a href="mailto:studentoffice.urol@semmelweis.hu">studentoffice.urol@semmelweis.hu</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Foundation -->
+    <div class="sidebar-box">
+      <div class="sidebar-box__title">Antal Géza Alapítvány</div>
+      <div class="sidebar-box__body foundation-box">
+        <p>
+          A Semmelweis Egyetem Urológiai Klinikáján folyó tudományos, gyógyító, megelőző és oktató munkát hivatott támogatni.<br><br>
+          <strong>Kérjük támogassa Ön is adója 1%-val az Antal Géza Alapítványt!</strong><br><br>
+          Bankszámlaszám: 10405004-50526566-54891017<br>
+          Adószám: 18138234-1-42
+        </p>
+      </div>
+    </div>
+
+  </aside>
+</div>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="site-footer__top">
+    <div class="footer-section">
+      <h3>Semmelweis Egyetem</h3>
+      <p style="font-size:0.8rem; color:rgba(255,255,255,0.6); margin-bottom:10px;">Kutató-Elitegyetem</p>
+      <p style="font-size:0.8rem; color:rgba(255,255,255,0.6);">H – 1085 Budapest, Üllői út 26.<br>+36 1 459-1500 | +36-20-825-1000</p>
+    </div>
+    <div class="footer-section">
+      <h3>Hasznos linkek</h3>
+      <div class="footer-links">
+        <a href="#">Alumni</a>
+        <a href="#">Webmail</a>
+        <a href="#">Telefonkönyv</a>
+        <a href="#">Neptun</a>
+        <a href="#">Moodle</a>
+        <a href="#">MySemmelweis</a>
+        <a href="#">Könyvtár</a>
+        <a href="#">Karrier</a>
+        <a href="#">Eseménynaptár</a>
+        <a href="#">HÖK</a>
+        <a href="#">Térkép</a>
+        <a href="#">Szabályzattár</a>
+      </div>
+    </div>
+  </div>
+  <div class="site-footer__bottom">
+    <span>2026 Semmelweis Egyetem – Minden jog fenntartva</span>
+    <a href="#">Adatvédelem</a>
+    <a href="#">Cookie-tájékoztató</a>
+    <a href="#">Impresszum</a>
+    <a href="#">Honlaptérkép</a>
+  </div>
+</footer>
+
+</body>
+</html>
